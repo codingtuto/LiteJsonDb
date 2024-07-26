@@ -13,7 +13,7 @@ long_description = """Documentation is available here:https://github.com/codingt
 
 setup(
     name="LiteJsonDb",
-    version="1.0.0",
+    version="3.3.4",
     author="Coding Team",
     author_email="codingteamgroup@gmail.com",
     license='MIT',
