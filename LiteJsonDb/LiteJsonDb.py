@@ -140,8 +140,6 @@ class JsonDB:
                 dict1[key] = value
         return dict1
 
-
-
     def key_exists(self, key: str) -> bool:
         """Check if a key exists in the database."""
         keys = key.split('/')
@@ -166,19 +164,26 @@ class JsonDB:
                 return None
         return data
 
-    def set_data(self, key: str, value: Any) -> None:
-        """Set data in the database and notify observers."""
+    def set_data(self, key: str, value: Optional[Any] = None) -> None:
+        """Set data in the database and notify observers.
+    
+        If `value` is not provided, initialize the key with an empty dictionary.
+        """
+        if value is None:
+            value = {}
+
         if not self.validate_data(value):
             print("\033[91mOops! The provided data is not in a valid format. Use a dictionary with consistent types.\033[0m")
             print(f"\033[93mTip: Ensure keys have consistent types and values are of allowed types.\033[0m")
             return
         if self.key_exists(key):
             print(f"\033[91mOops! The key '{key}' already exists. Use 'edit_data' to modify the existing key.\033[0m")
-            print(f"\033[93mTip: If you want to update the key, use db.edit_data('{key}', new_value).\033[0m")
+            print(f"\033[93mTip: If you want to update or add new key, use db.edit_data('{key}', new_value).\033[0m")
             return
         self._set_child(self.db, key, value)
         self._backup_db()
         self._save_db()
+
 
     def edit_data(self, key: str, value: Any) -> None:
         """Edit data in the database and notify observers."""
@@ -222,9 +227,12 @@ class JsonDB:
 
     def get_db(self, raw: bool = False) -> Union[Dict[str, Any], str]:
         """Get the entire database, optionally in raw format."""
-        if raw or not self.crypted:
+        if raw:
             return self.db
-        return self._decrypt(self._encrypt(self.db))
+        if self.crypted:
+            return self._decrypt(self._encrypt(self.db))
+        return self.db
+
 
     def get_subcollection(self, collection_name: str, item_id: Optional[str] = None) -> Optional[Any]:
         """Get a specific subcollection or an item within a subcollection."""
@@ -242,13 +250,13 @@ class JsonDB:
         """Set an item in a specific subcollection."""
         if not self.validate_data(value):
             print("\033[91mOops! The provided data is not in a valid format. Use a dictionary.\033[0m")
-            print(f"\033[93mTip: Your data should look like this: {{'name': 'John', 'age': 30}}\033[0m")
+            print(f"\033[93mTip: Your data should look like this: {{'name': 'Aliou', 'age': 30}}\033[0m")
             return
         if collection_name not in self.db:
             self.db[collection_name] = {}
         if item_id in self.db[collection_name]:
             print(f"\033[91mOops! The ID '{item_id}' already exists in the collection '{collection_name}'. Use 'edit_subcollection' to modify the existing item.\033[0m")
-            print(f"\033[93mTip: If you want to update the item, use db.edit_subcollection('{collection_name}', '{item_id}', new_value).\033[0m")
+            print(f"\033[93mTip: If you want to update or add new item, use db.edit_subcollection('{collection_name}', '{item_id}', new_value).\033[0m")
             return
         self.db[collection_name][item_id] = value
         self._backup_db()
@@ -258,7 +266,7 @@ class JsonDB:
         """Edit an item in a specific subcollection."""
         if not self.validate_data(value):
             print("\033[91mOops! The provided data is not in a valid format. Use a dictionary.\033[0m")
-            print(f"\033[93mTip: Your data should look like this: {{'name': 'John', 'age': 30}}\033[0m")
+            print(f"\033[93mTip: Your data should look like this: {{'name': 'Aliou', 'age': 30}}\033[0m")
             return
         if collection_name in self.db and item_id in self.db[collection_name]:
             current_data = self.db[collection_name][item_id]
