@@ -8,7 +8,7 @@
 """
 from setuptools import setup, find_packages
 
-long_description = """Documentation is available here: https://github.com/codingtuto/LiteJsonDb/
+long_description = """Documentation is available here:https://github.com/codingtuto/LiteJsonDb/
 """
 
 setup(
