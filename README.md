@@ -1,8 +1,9 @@
 # LiteJsonDb: Your Go-To Lightweight JSON Database
 ![illustration](https://telegra.ph/file/374450a4f36c217b3a20b.jpg)
 ![PyPi downloads](https://img.shields.io/pypi/dm/LiteJsonDb.svg) 
-![Supported Python versions](https://img.shields.io/pypi/pyversions/LiteJsonDb.svg)
 ![PyPi Package Version](https://img.shields.io/pypi/v/LiteJsonDb.svg)
+![GitHub stars](https://img.shields.io/github/stars/codingtuto/LiteJsonDb)
+![GitHub forks](https://img.shields.io/github/forks/codingtuto/LiteJsonDb)
 
 ## :eyes: Overview
 
@@ -31,6 +32,8 @@ Getting started is super easy. Just install the package via pip and you're good 
 pip install litejsondb
 </pre>
 
+The new version **3.3.4** is available type `pip install --upgrade litejsondb` to update
+
 ## :crystal_ball: Usage
 
 ### :white_check_mark: Initial Setup
@@ -51,7 +54,10 @@ db = LiteJsonDb.JsonDB(crypted=True)
 Adding data is a breeze. Just use the `set_data` method. If the key already exists, you'll get a friendly reminder to use `edit_data` instead.
 
 <pre>
-# Set data
+# Set data without extra-data
+db.set_data("posts")
+
+# Set data with extra-data
 db.set_data("users/1", {"name": "Aliou", "age": 20})
 db.set_data("users/2", {"name": "Coder", "age": 25})
 </pre>
@@ -74,6 +80,14 @@ Retrieving data is as simple as it gets. Use the `get_data` method.
 print(db.get_data("users/1"))  # Output: {'name': 'Alex', 'age': 20}
 print(db.get_data("users/2"))  # Output: {'name': 'Coder', 'age': 25}
 </pre>
+
+> [!TIP]
+> You can directly access specific data by using paths in the `get_data` method. For example, to get only the user's name, you can do:
+<pre>
+print(db.get_data("users/1/name"))
+</pre>
+
+Here, you get the user's name without retrieving other parts of the data.
 
 #### :wastebasket: Removing Data
 
@@ -159,7 +173,7 @@ LiteJsonDb is all about being helpful. Here are some friendly, colorful error me
 
 ## :open_file_folder: Example Project Structure
 
-Here's how your project might look:
+Here's how your project might look if your initialized `LiteJssonDb`:
 
 <pre>
 project/
@@ -182,6 +196,10 @@ import LiteJsonDb
 db =  LiteJsonDb.JsonDB(crypted=True)
 
 # Add some initial data
+# Set data without extra-data
+db.set_data("posts")
+
+# Set data with extra-data
 db.set_data("users/1", {"name": "Aliou", "age": 20})
 db.set_data("users/2", {"name": "Coder", "age": 25})
 
@@ -204,6 +222,39 @@ db.edit_subcollection("groups", "1", {"description": "Admin group"})
 print(db.get_subcollection("groups"))
 db.remove_subcollection("groups", "1")
 </pre>
+
+## :memo: Understanding `set_data` vs. Subcollections
+
+<details>
+<summary>Click to expand</summary>
+
+### `set_data`
+
+The `set_data` method is used to add or update data at a specific path. If the key already exists, you will need to use `edit_data` to modify it. This method is great for simple key-value pairs or straightforward data structures.
+
+<pre>
+# Set data
+db.set_data("users/1", {"name": "Aliou", "age": 20})
+</pre>
+
+### Subcollections
+
+Subcollections, on the other hand, are used to create and manage nested structures within your database. They allow you to group related data under a parent key, providing a more organized way to handle complex relationships. Subcollections are essentially collections within collections.
+
+<pre>
+# Set subcollection data
+db.set_subcollection("groups", "1", {"name": "Admins"})
+</pre>
+
+### Key Differences
+
+- **Structure**: `set_data` is used for flat data structures, while subcollections allow for hierarchical organization.
+- **Usage**: Use `set_data` for simple key-value pairs and `set_subcollection` when you need nested collections.
+- **Organization**: Subcollections help in maintaining a clear structure and grouping related data together, making it easier to manage and query complex relationships.
+
+By understanding these differences, you can choose the appropriate method for your data management needs, ensuring a well-organized and efficient database.
+
+</details>
 
 ## 🧾 TODO: What's Next for Json2DB-Lite
 
