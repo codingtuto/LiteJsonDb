@@ -38,10 +38,10 @@ pip install litejsondb
 First things first, import the `JsonDB` class and initialize your database:
 
 <pre>
-import liteJsonDb
+import LiteJsonDb
 
 # Initialize the database with encryption enabled
-db = liteJsonDb.JsonDB(crypted=True)
+db = LiteJsonDb.JsonDB(crypted=True)
 </pre>
 
 ### 🤗 Basic Operations
@@ -176,10 +176,10 @@ project/
 Let's put it all together with an example `main.py` file:
 
 <pre>
-import liteJsonDb
+import LiteJsonDb
   
 # Initialize the database with encryption enabled
-db = liteJsonDb.JsonDB(crypted=True)
+db =  LiteJsonDb.JsonDB(crypted=True)
 
 # Add some initial data
 db.set_data("users/1", {"name": "Aliou", "age": 20})
