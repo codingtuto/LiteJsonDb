@@ -20,6 +20,7 @@ Let's face it: sometimes you don't need a complex database setup. Maybe you're b
 - **Subcollections**: Organize your data in neat, nested structures.
 - **Friendly Error Handling**: Helpful, colorful error messages to guide you.
 
+> [!NOTE]
 > LiteJsonDb makes managing JSON data simple and enjoyable. Whether you're building a small app or just need a lightweight data storage solution, LiteJsonDb has you covered. Enjoy! 
 
 ## :man_technologist: Installation
@@ -43,7 +44,7 @@ import liteJsonDb
 db = liteJsonDb.JsonDB(crypted=True)
 </pre>
 
-### :hugging_face: Basic Operations
+### 🤗 Basic Operations
 
 #### :heavy_plus_sign: Setting Data
 
@@ -170,7 +171,7 @@ project/
 └── your_code.py
 </pre>
 
-## Example `main.py`
+## :shipit: Example `main.py`
 
 Let's put it all together with an example `main.py` file:
 
@@ -203,6 +204,17 @@ db.edit_subcollection("groups", "1", {"description": "Admin group"})
 print(db.get_subcollection("groups"))
 db.remove_subcollection("groups", "1")
 </pre>
+
+## 🧾 TODO: What's Next for Json2DB-Lite
+
+We’re always striving to enhance Json2DB-Lite. Here’s what’s on our radar:
+
+- [x] Add support for data encryption to secure JSON content.
+- [x] Implement automatic backups to ensure data safety.
+- [x] Improve error handling with friendly, colorful messages.
+- [ ] Implement automated backups to send data to a Telegram bot.
+- [ ] Fix any bugs that are discovered to ensure smooth operation.
+- [ ] Reach 100 stars on GitHub and celebrate by adding more awesome features! 
 
 ## :hugs: Contributions and Community
 We welcome contributions, suggestions, and feedback to make LiteJsonDb even better! If you have ideas for improvements or want to fix a bug, feel free to:
