@@ -4,6 +4,8 @@
 ![PyPi Package Version](https://img.shields.io/pypi/v/LiteJsonDb.svg)
 ![GitHub stars](https://img.shields.io/github/stars/codingtuto/LiteJsonDb)
 ![GitHub forks](https://img.shields.io/github/forks/codingtuto/LiteJsonDb)
+---
+[![Voir la documentation en Français](https://img.shields.io/badge/Documentation-Fran%C3%A7ais-blue)](./README.fr.md)
 
 ## :eyes: Overview
 
