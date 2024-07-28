@@ -265,6 +265,7 @@ We’re always striving to enhance Json2DB-Lite. Here’s what’s on our radar:
 - [x] Add support for data encryption to secure JSON content.
 - [x] Implement automatic backups to ensure data safety.
 - [x] Improve error handling with friendly, colorful messages.
+- [x] Added french language documentation
 - [ ] Implement automated backups to send data to a Telegram bot.
 - [ ] Fix any bugs that are discovered to ensure smooth operation.
 - [ ] Reach 100 stars on GitHub and celebrate by adding more awesome features! 
