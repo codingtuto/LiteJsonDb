@@ -6,6 +6,7 @@
 ![GitHub forks](https://img.shields.io/github/forks/codingtuto/LiteJsonDb)
 ---
 [![Voir la documentation en Français](https://img.shields.io/badge/Documentation-Fran%C3%A7ais-blue)](./README.fr.md)
+[![Wiki](https://img.shields.io/badge/wiki-Documentation-blue.svg)](https://github.com/codingtuto/LiteJsonDb/wiki)
 
 ## :eyes: Overview
 
@@ -34,7 +35,7 @@ Getting started is super easy. Just install the package via pip and you're good 
 pip install litejsondb
 </pre>
 
-The new version **3.3.4** is available type `pip install --upgrade litejsondb` to update
+A new version is available type `pip install --upgrade litejsondb` to update
 
 ## :crystal_ball: Usage
 

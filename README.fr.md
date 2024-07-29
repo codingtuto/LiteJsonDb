@@ -32,7 +32,7 @@ Commencer est super facile. Installez simplement le paquet via pip et vous êtes
 pip install litejsondb
 ```
 
-La nouvelle version **3.3.4** est disponible, tapez `pip install --upgrade litejsondb` pour mettre à jour
+Une nouvelle version est disponible, tapez `pip install --upgrade litejsondb` pour mettre à jour
 
 ## :crystal_ball: Utilisation
 

@@ -61,7 +61,7 @@ class JsonDB:
             with open(self.filename, 'r') as file:
                 data = json.load(file)
                 if self.crypted and data:
-                    self.db = self._decrypt(data)  # Removed extra parameter `data`
+                    self.db = self._decrypt(data)
                 else:
                     self.db = data
         except (OSError, json.JSONDecodeError) as e:
@@ -181,9 +181,9 @@ class JsonDB:
             print(f"\033[93mTip: If you want to update or add new key, use db.edit_data('{key}', new_value).\033[0m")
             return
         self._set_child(self.db, key, value)
+        self.notify_observers("set_data", key, value)
         self._backup_db()
         self._save_db()
-
 
     def edit_data(self, key: str, value: Any) -> None:
         """Edit data in the database and notify observers."""
@@ -195,16 +195,64 @@ class JsonDB:
             print("\033[91mOops! The provided data is not in a valid format. Use a dictionary with consistent types.\033[0m")
             print(f"\033[93mTip: Ensure keys have consistent types and values are of allowed types.\033[0m")
             return
+
         keys = key.split('/')
         data = self.db
         for k in keys[:-1]:
             data = data.setdefault(k, {})
+    
         current_data = data.get(keys[-1], {})
-        if isinstance(current_data, dict):
-            value = self._merge_dicts(current_data, value)
-        data[keys[-1]] = value
+    
+        """
+        Adding the increment because we're all about making coding a little bit easier. 
+        (Plus, who doesn't love a good shortcut?)
+        """
+        if isinstance(value, dict) and "increment" in value:
+            for field, increment_value in value["increment"].items():
+                if field in current_data:
+                    if isinstance(current_data[field], (int, float)):
+                        if isinstance(increment_value, (int, float)):
+                            current_data[field] += increment_value
+                        else:
+                            print(f"\033[91mOops! The increment value for '{field}' is not a number.\033[0m")
+                            print(f"\033[93mTip: Make sure to provide a numeric value for incrementing. Example: db.edit_data('users/1', {{'increment': {{'score': 5}}}})\033[0m")
+                            return
+                    else:
+                        print(f"\033[91mOops! The field '{field}' is not a number in '{key}'. Cannot increment.\033[0m")
+                        print(f"\033[93mTip: Ensure that the field '{field}' exists and is a number before incrementing.\033[0m")
+                        return
+                else:
+                    print(f"\033[91mOops! The field '{field}' does not exist in '{key}'. Cannot increment.\033[0m")
+                    print(f"\033[93mTip: Make sure the field exists in the data structure. You can use db.edit_data to set initial values.\033[0m")
+                    return
+        else:
+            if isinstance(current_data, dict):
+                value = self._merge_dicts(current_data, value)
+            data[keys[-1]] = value
+
         self._backup_db()
         self._save_db()
+
+
+    def add_observer(self, key: str, observer_func) -> None:
+        """Add an observer for a specific key."""
+        if key not in self.observers:
+            self.observers[key] = []
+        self.observers[key].append(observer_func)
+
+    def remove_observer(self, key: str, observer_func) -> None:
+        """Remove an observer for a specific key."""
+        if key in self.observers:
+            self.observers[key].remove(observer_func)
+            if not self.observers[key]:
+                del self.observers[key]
+
+    def notify_observers(self, action: str, key: str, value: Any) -> None:
+        """Notify all observers about a change."""
+        for observer_key, observers in self.observers.items():
+            if key.startswith(observer_key):
+                for observer in observers:
+                    observer(action, key, value)
 
     def remove_data(self, key: str) -> None:
         """Remove data from the database by key."""
