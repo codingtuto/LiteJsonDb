@@ -13,6 +13,11 @@ import base64
 import logging
 import shutil
 from typing import Any, Dict, Optional, Union
+from utils import (
+    convert_to_datetime, get_or_default, key_exists_or_add, normalize_keys,
+    flatten_json, filter_data, sort_data, hash_password, check_password,
+    sanitize_output, pretty_print
+)
 
 # LET'S CREATE THE DATABASE FILE
 DATABASE_DIR = 'database'
@@ -35,7 +40,16 @@ class JsonDB:
         self.db = {}
         self.observers = {}
         self._load_db()
-
+    
+    # ==================================================
+    #               ENCRYPTION/DECRYPTION
+    #                  DO NOT MODIFY
+    # --------------------------------------------------
+    # Please do not tamper with the encryption and decryption functionality. 
+    # I've implemented it using base64. 
+    # Changing this could cause compatibility issues if users update our package. 
+    # Let's avoid that mess, shall we?
+    # ==================================================
     def _encrypt(self, data: Dict[str, Any]) -> str:
         """Encode data to base64 for fun. Just a playful way to 'encrypt' our data!"""
         json_data = json.dumps(data).encode('utf-8')
@@ -47,6 +61,10 @@ class JsonDB:
         decoded_data = base64.b64decode(encoded_data.encode('utf-8')).decode('utf-8')
         return json.loads(decoded_data)
 
+    # ==================================================
+    #               DATABASE OPERATIONS
+    #           SAVE, RESTORE, AND RETRIEVE
+    # ==================================================
     def _load_db(self) -> None:
         """Load the database from the JSON file, or create a new one if it doesn't exist."""
         if not os.path.exists(self.filename):
@@ -105,6 +123,11 @@ class JsonDB:
         else:
             print(f"\033[91mOops! No backup file found to restore.\033[0m")
             logging.error("No backup file found to restore.")
+
+    # ==================================================
+    #                DATA VALIDATION
+    # --------------------------------------------------
+    # ==================================================
 
     def validate_data(self, data: Any) -> bool:
         """Validate data before insertion."""
@@ -232,7 +255,11 @@ class JsonDB:
 
         self._backup_db()
         self._save_db()
-
+    
+    # ==================================================
+    #                DATA OBSERVERS
+    # --------------------------------------------------
+    # ==================================================
 
     def add_observer(self, key: str, observer_func) -> None:
         """Add an observer for a specific key."""
@@ -273,6 +300,11 @@ class JsonDB:
             print(f"\033[91mOops! The key '{key}' does not exist. Cannot delete.\033[0m")
             print(f"\033[93mTip: Make sure the key path is correct and exists.\033[0m")
 
+    # ==================================================
+    #                WHOLE DATABASE
+    # --------------------------------------------------
+    # ==================================================
+
     def get_db(self, raw: bool = False) -> Union[Dict[str, Any], str]:
         """Get the entire database, optionally in raw format."""
         if raw:
@@ -281,6 +313,10 @@ class JsonDB:
             return self._decrypt(self._encrypt(self.db))
         return self.db
 
+    # ==================================================
+    #            SUBCOLLECTION VALIDATION
+    # --------------------------------------------------
+    # ==================================================
 
     def get_subcollection(self, collection_name: str, item_id: Optional[str] = None) -> Optional[Any]:
         """Get a specific subcollection or an item within a subcollection."""
@@ -347,3 +383,76 @@ class JsonDB:
                 print(f"\033[91mOops! The ID '{item_id}' does not exist in the collection '{collection_name}'. Cannot delete.\033[0m")
                 print(f"\033[93mTip: Check the ID and collection name. Use get_subcollection('{collection_name}') to see all items.\033[0m")
                 return
+    
+    # ==================================================
+    #               UTILITY FUNCTIONS
+    #         (Methods for commonly used utilities)
+    # --------------------------------------------------
+    # This section provides static methods that act as
+    # wrappers for various utility functions. They are
+    # designed to be used across different parts of the
+    # application for convenience and consistency.
+    # ==================================================
+
+    @staticmethod
+    def call_utility_function(func_name, *args, **kwargs):
+        functions = {
+            'convert_to_datetime': convert_to_datetime,
+            'get_or_default': get_or_default,
+            'key_exists_or_add': key_exists_or_add,
+            'normalize_keys': normalize_keys,
+            'flatten_json': flatten_json,
+            'filter_data': filter_data,
+            'sort_data': sort_data,
+            'hash_password': hash_password,
+            'check_password': check_password,
+            'sanitize_output': sanitize_output,
+            'pretty_print': pretty_print
+        }
+        if func_name in functions:
+            return functions[func_name](*args, **kwargs)
+        raise ValueError(f"Function {func_name} not found.")
+    
+    @staticmethod
+    def convert_to_datetime(date_str):
+        return JsonDB.call_utility_function('convert_to_datetime', date_str)
+
+    @staticmethod
+    def get_or_default(data, key, default=None):
+        return JsonDB.call_utility_function('get_or_default', data, key, default)
+
+    @staticmethod
+    def key_exists_or_add(data, key, default):
+        return JsonDB.call_utility_function('key_exists_or_add', data, key, default)
+
+    @staticmethod
+    def normalize_keys(data):
+        return JsonDB.call_utility_function('normalize_keys', data)
+
+    @staticmethod
+    def flatten_json(data):
+        return JsonDB.call_utility_function('flatten_json', data)
+
+    @staticmethod
+    def filter_data(data, condition):
+        return JsonDB.call_utility_function('filter_data', data, condition)
+
+    @staticmethod
+    def sort_data(data, key, reverse=False):
+        return JsonDB.call_utility_function('sort_data', data, key, reverse)
+
+    @staticmethod
+    def hash_password(password):
+        return JsonDB.call_utility_function('hash_password', password)
+
+    @staticmethod
+    def check_password(stored_hash, password):
+        return JsonDB.call_utility_function('check_password', stored_hash, password)
+
+    @staticmethod
+    def sanitize_output(data):
+        return JsonDB.call_utility_function('sanitize_output', data)
+
+    @staticmethod
+    def pretty_print(data):
+        return JsonDB.call_utility_function('pretty_print', data)

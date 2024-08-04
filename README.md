@@ -4,9 +4,16 @@
 ![PyPi Package Version](https://img.shields.io/pypi/v/LiteJsonDb.svg)
 ![GitHub stars](https://img.shields.io/github/stars/codingtuto/LiteJsonDb)
 ![GitHub forks](https://img.shields.io/github/forks/codingtuto/LiteJsonDb)
+
 ---
+
 [![Voir la documentation en Français](https://img.shields.io/badge/Documentation-Fran%C3%A7ais-blue)](./README.fr.md)
 [![Wiki](https://img.shields.io/badge/wiki-Documentation-blue.svg)](https://github.com/codingtuto/LiteJsonDb/wiki)
+
+---
+> [!NOTE]
+> We’ve just added some awesome new utilities to `LiteJsonDb` to make your coding even smoother. For a quick overview and examples, check out our [wiki](https://github.com/codingtuto/LiteJsonDb/wiki/LiteJsonDb-Utility-Functions) for all the details.
+---
 
 ## :eyes: Overview
 

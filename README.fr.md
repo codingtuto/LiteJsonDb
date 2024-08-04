@@ -5,6 +5,11 @@
 ![Étoiles GitHub](https://img.shields.io/github/stars/codingtuto/LiteJsonDb)
 ![Forks GitHub](https://img.shields.io/github/forks/codingtuto/LiteJsonDb)
 
+---
+> [!NOTE]
+> Nous avons récemment ajouté des utilitaires géniaux à LiteJsonDb pour rendre votre codage encore plus fluide. Pour un aperçu rapide et des exemples, consultez notre [wiki](https://github.com/codingtuto/LiteJsonDb/wiki/LiteJsonDb-Utility-Functions) pour tous les détails.
+---
+
 ## :eyes: Aperçu
 
 Salut ! Bienvenue sur **LiteJsonDb**, votre base de données conviviale et légère basée sur JSON. Inspirée par la simplicité et les capacités en temps réel de Firestore, LiteJsonDb facilite la gestion de vos données. Elle est dotée de fonctionnalités telles que le chiffrement, les sauvegardes et une gestion solide des erreurs, le tout sans effort supplémentaire.
