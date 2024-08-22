@@ -18,6 +18,7 @@ from utils import (
     flatten_json, filter_data, sort_data, hash_password, check_password,
     sanitize_output, pretty_print
 )
+from modules.search import search_data
 
 # LET'S CREATE THE DATABASE FILE
 DATABASE_DIR = 'database'
@@ -383,6 +384,30 @@ class JsonDB:
                 print(f"\033[91mOops! The ID '{item_id}' does not exist in the collection '{collection_name}'. Cannot delete.\033[0m")
                 print(f"\033[93mTip: Check the ID and collection name. Use get_subcollection('{collection_name}') to see all items.\033[0m")
                 return
+
+    # ==================================================
+    #                DATA SEARCH
+    # ==================================================
+
+    def search_data(self, value: Any, key: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """
+        Search for a value in the database.
+
+        :param value: The elusive treasure you're hunting for.
+        :param key: A specific key to search within the documents. If None, we'll search everywhere like a treasure map with no boundaries.
+        :return: A dictionary of found items or None if the treasure remains hidden.
+        """
+
+        try:
+            result = search_data(self.db, value, key)
+            if result:
+                return result
+            else:
+                return None
+        except Exception as e:
+            print(f"\033[91mOops! An error occurred while searching data.\033[0m")
+            print(f"\033[93mError details: {e}\033[0m")
+            return None
     
     # ==================================================
     #               UTILITY FUNCTIONS

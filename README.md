@@ -117,6 +117,42 @@ Want to see everything? Use the `get_db` method. Set `raw=True` if you want the 
 print(db.get_db(raw=True))
 </pre>
 
+## 🆕: Search Data
+
+This new feature was integrated in response to the [issue](https://github.com/codingtuto/LiteJsonDb/issues/2) raised about improving data search capabilities. We are excited to announce the addition of the `search_data` function! This function allows you to search for values within your database, either across the entire database or within a specific key. This enhancement makes finding your data much easier and more efficient.
+
+
+### How to use
+
+The `search_data` function provides two main modes of search:
+
+1. **Basic Search**: Search for a value anywhere in the database.
+2. **Key-specific Search**: Search for a value within a specific key.
+
+### Integration
+
+1. **Use the `search_data` Function**
+
+   Here’s how you can use the `search_data` function:
+
+   - **Basic Search**: To search for a value across the entire database, use the following code:
+
+     ```python
+     results = db.search_data("Aliou")
+     print(results)
+     ```
+
+     This will search for the value `"Aliou"` throughout all the keys in your database.
+
+   - **Key-specific Search**: To search for a value within a specific key, use the following code:
+
+     ```python
+     results = db.search_data("Aliou", key="users")
+     print(results)
+     ```
+
+     This will search for the value `"Aliou"` specifically within the `"users"` key.
+
 ### :file_folder: Working with Subcollections
 
 ## :file_folder: Subcollections
@@ -222,6 +258,14 @@ print(db.get_data("users/2"))
 
 # Remove data
 db.remove_data("users/2")
+
+# Perform a basic search
+results = db.search_data("Aliou")
+print("Basic Search Results:", results)
+
+# Perform a key-specific search
+results = db.search_data("Aliou", key="users")
+print("Key-specific Search Results:", results)
 
 # Retrieve the full database
 print(db.get_db(raw=True))

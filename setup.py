@@ -7,13 +7,15 @@
 ╚═════╝░╚══════╝░░░╚═╝░░░░╚═════╝░╚═╝░░░░░╚═╝╚═╝░░░░░░░░╚═╝░░░
 """
 from setuptools import setup, find_packages
+import readme_renderer.markdown 
 
-long_description = """Documentation is available here:https://github.com/codingtuto/LiteJsonDb/
-"""
+long_description = ""
+with open('README.md', encoding='utf-8') as file:
+    long_description = file.read()
 
 setup(
     name="LiteJsonDb",
-    version="3.3.4",
+    version="3.3.7",
     author="Coding Team",
     author_email="codingteamgroup@gmail.com",
     license='MIT',
