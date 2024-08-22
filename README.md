@@ -117,10 +117,9 @@ Want to see everything? Use the `get_db` method. Set `raw=True` if you want the 
 print(db.get_db(raw=True))
 </pre>
 
-## 🆕: Search Data
+## 🔍 Search Data (new)
 
-This new feature was integrated in response to the [issue](https://github.com/codingtuto/LiteJsonDb/issues/2) raised about improving data search capabilities. We are excited to announce the addition of the `search_data` function! This function allows you to search for values within your database, either across the entire database or within a specific key. This enhancement makes finding your data much easier and more efficient.
-
+This new feature was integrated in response to the [issue](https://github.com/codingtuto/LiteJsonDb/issues/2) raised about improving data search capabilities. This function allows you to search for values within your database, either across the entire database or within a specific key. This enhancement makes finding your data much easier and more efficient.
 
 ### How to use
 
