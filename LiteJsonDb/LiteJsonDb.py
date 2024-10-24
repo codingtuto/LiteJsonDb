@@ -19,6 +19,7 @@ from .utils import (
     sanitize_output, pretty_print
 )
 from .modules.search import search_data
+from .modules.tgbot import BackupToTelegram
 
 # LET'S CREATE THE DATABASE FILE
 DATABASE_DIR = 'database'
@@ -109,6 +110,12 @@ class JsonDB:
             print(f"\033[91mOops! Unable to create the backup file. Make sure you have the correct permissions.\033[0m")
             print(f"\033[93mError details: {e}\033[0m")
             raise
+
+    def backup_to_telegram(self, token: str, chat_id: str):
+        """Create db backup using Telegram API"""
+        self._save_db()
+        telegram_bot = BackupToTelegram(token=token, chat_id=chat_id)
+        telegram_bot.backup_to_telegram(self.filename)
 
     def _restore_db(self) -> None:
         """Restore the database from backup."""
