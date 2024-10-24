@@ -15,7 +15,7 @@ with open('README.md', encoding='utf-8') as file:
 
 setup(
     name="LiteJsonDb",
-    version="3.3.8",
+    version="3.4.0",
     author="Coding Team",
     author_email="codingteamgroup@gmail.com",
     license='MIT',

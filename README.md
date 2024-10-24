@@ -152,6 +152,35 @@ The `search_data` function provides two main modes of search:
 
      This will search for the value `"Aliou"` specifically within the `"users"` key.
 
+## 📦 Backup to Telegram (new)
+
+This feature was integrated to help you easily back up your files, such as your database, directly to a Telegram chat. By using this method, you can safely back up important files automatically to a Telegram conversation.
+
+### How to use
+
+The `backup_to_telegram` function allows you to back up any file to Telegram via a bot. You will need two essential pieces of information: the **bot token** and the **chat ID** where the file will be sent.
+
+### Integration
+
+1. **Obtain your Telegram bot token**  
+   To use this feature, you first need to create a bot on Telegram using [@BotFather](https://t.me/BotFather). Once your bot is created, BotFather will provide you with a token that you will use for authentication.
+
+2. **Find your chat ID**  
+   You can get your chat ID by using [@MissRose_bot](https://t.me/MissRose_bot) and typing `/id`. It will give you your unique chat ID.
+
+3. **Use the `backup_to_telegram` Function**  
+   Here's how to use the `backup_to_telegram` function:
+
+   <pre><code>python
+   db.backup_to_telegram("your_token", "your_chat_id")
+   </code></pre>
+
+   This will send the backup file to the specified chat ID using your Telegram bot.
+
+4. **Where to find your token and chat ID**:
+   - **Telegram bot token**: Get this from [@BotFather](https://t.me/BotFather).
+   - **Telegram chat ID**: Get this by interacting with [@MissRose_bot](https://t.me/MissRose_bot) and using the `/id` command.
+
 ### :file_folder: Working with Subcollections
 
 ## :file_folder: Subcollections
@@ -274,6 +303,9 @@ db.set_subcollection("groups", "1", {"name": "Admins"})
 db.edit_subcollection("groups", "1", {"description": "Admin group"})
 print(db.get_subcollection("groups"))
 db.remove_subcollection("groups", "1")
+
+# IF YOU WANT TO BACKUP THE DATABASE ON TELEGRAM
+# db.backup_to_telegram("your_token", "your_chat_id")
 </pre>
 
 ## :memo: Understanding `set_data` vs. Subcollections
@@ -317,7 +349,7 @@ We’re always striving to enhance Json2DB-Lite. Here’s what’s on our radar:
 - [x] Implement automatic backups to ensure data safety.
 - [x] Improve error handling with friendly, colorful messages.
 - [x] Added french language documentation
-- [ ] Implement automated backups to send data to a Telegram bot.
+- [x] Implement automated backups to send data to a Telegram bot.
 - [ ] Fix any bugs that are discovered to ensure smooth operation.
 - [ ] Reach 100 stars on GitHub and celebrate by adding more awesome features! 
 
