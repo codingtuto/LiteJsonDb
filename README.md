@@ -181,6 +181,53 @@ The `backup_to_telegram` function allows you to back up any file to Telegram via
    - **Telegram bot token**: Get this from [@BotFather](https://t.me/BotFather).
    - **Telegram chat ID**: Get this by interacting with [@MissRose_bot](https://t.me/MissRose_bot) and using the `/id` command.
 
+## 📦 Export to CSV (new)
+
+This feature was integrated to allow you to easily export your data to CSV format. This makes it convenient to share and analyze your data outside the application by creating CSV files that can be opened with spreadsheet software like Excel or Google Sheets.
+
+### How to use
+
+The `export_to_csv` method allows you to export either a specific collection or the entire database. Here’s how to use it:
+
+### Integration
+1. **Prepare your data**  
+   Ensure that the data you want to export is well-structured. You can have your data as dictionaries or lists of dictionaries. For example:
+
+   <pre><code>
+   # Adding example data
+   db.set_data("users", {
+       "1": {"name": "Aliou", "age": 20},
+       "2": {"name": "Coder", "age": 25}
+   })
+   </code></pre>
+
+2. **Use the `export_to_csv` Method**  
+   Here’s how to call the method to export data:
+
+   #### Export a Specific Collection
+
+   To export a specific collection, you need to provide the corresponding key:
+
+   <pre><code>
+   # Export a specific collection
+   db.export_to_csv("users") 
+   </code></pre>
+
+   #### Export the Entire Database
+
+   If you want to export all the data from the database, you can call the method without parameters:
+
+   <pre><code>
+   # Export the entire database
+   db.export_to_csv()  
+   </code></pre>
+
+## 🐛 Error Handling
+
+This feature is experimental and may not support all data formats. If you attempt to export a collection that does not exist, an error message will be displayed:
+
+If you receive errors like this: `Oops! An error occurred during CSV export: ...` we recommend opening an issue in our repository so we can address it. Your feedback is valuable, and we appreciate your patience as we continue to improve this feature!
+
 ### :file_folder: Working with Subcollections
 
 ## :file_folder: Subcollections
@@ -306,6 +353,14 @@ db.remove_subcollection("groups", "1")
 
 # IF YOU WANT TO BACKUP THE DATABASE ON TELEGRAM
 # db.backup_to_telegram("your_token", "your_chat_id")
+
+""" IF YOU WANT TO EXPORT YOUR DATA ON CSV FORMAT
+# Export a specific collection
+db.export_to_csv("users") 
+
+# Export the entire database
+db.export_to_csv()
+"""
 </pre>
 
 ## :memo: Understanding `set_data` vs. Subcollections
@@ -341,9 +396,9 @@ By understanding these differences, you can choose the appropriate method for yo
 
 </details>
 
-## 🧾 TODO: What's Next for Json2DB-Lite
+## 🧾 TODO: What's Next for LiteJsonDb
 
-We’re always striving to enhance Json2DB-Lite. Here’s what’s on our radar:
+We’re always striving to enhance LiteJsonDb. Here’s what’s on our radar:
 
 - [x] Add support for data encryption to secure JSON content.
 - [x] Implement automatic backups to ensure data safety.
@@ -364,11 +419,11 @@ We welcome contributions, suggestions, and feedback to make LiteJsonDb even bett
 
 ## :heart: Donations and Support: How You Can Help
 
-Json2DB-Lite is a labor of love, and your support can make a big difference! If you’re enjoying the project and want to show your appreciation, here are a few ways you can help:
+LiteJsonDb is a labor of love, and your support can make a big difference! If you’re enjoying the project and want to show your appreciation, here are a few ways you can help:
 
 ### Fork and Star the Repo
 
-One of the best ways to support Json2DB-Lite is to fork the repository and give it a star on GitHub. It’s like a virtual high-five and helps us spread the word about the project. Plus, it shows us that you value the work we’re doing!
+One of the best ways to support LiteJsonDb is to fork the repository and give it a star on GitHub. It’s like a virtual high-five and helps us spread the word about the project. Plus, it shows us that you value the work we’re doing!
 
 ### Consider a Donation
 
@@ -377,6 +432,6 @@ If you’re feeling extra generous and want to contribute financially, we’d be
 - **PayPal**: Send a donation directly to [my PayPal account](https://paypal.me/djibson35). Every little bit helps and is greatly appreciated!
 - **Bitcoin**: Prefer cryptocurrency? You can also donate using Bitcoin to the following address: `1Nn15EttfT2dVBisj8bXCnBiXjcqk1ehWR`.
 
-> Your support, whether through a star, a fork, or a donation, helps keep Json2DB-Lite alive and thriving. Thank you for being awesome!
+> Your support, whether through a star, a fork, or a donation, helps keep LiteJsonDb alive and thriving. Thank you for being awesome!
 
 Cheers and happy coding! :rocket:

@@ -20,6 +20,7 @@ from .utils import (
 )
 from .modules.search import search_data
 from .modules.tgbot import BackupToTelegram
+from .modules.csv import CSVExporter
 
 # LET'S CREATE THE DATABASE FILE
 DATABASE_DIR = 'database'
@@ -41,6 +42,7 @@ class JsonDB:
         self.crypted = crypted
         self.db = {}
         self.observers = {}
+        self.csv_exporter = CSVExporter(DATABASE_DIR)
         self._load_db()
     
     # ==================================================
@@ -131,6 +133,34 @@ class JsonDB:
         else:
             print(f"\033[91mOops! No backup file found to restore.\033[0m")
             logging.error("No backup file found to restore.")
+
+    # ==================================================
+    #                EXPORT TO CSV
+    # --------------------------------------------------
+    # Exports either a specified collection or the entire
+    # database to a CSV file.
+    # ==================================================
+    def export_to_csv(self, data_key: Optional[str] = None):
+        if data_key:
+            if data_key in self.db:
+                data = self.db[data_key]
+                csv_path = self.csv_exporter.export(data, f"{data_key}_export.csv")
+                if csv_path:
+                    print(f"\033[92mFile created: {csv_path}\033[0m")
+                else:
+                    print(f"\033[91mOops! Could not export '{data_key}' to CSV.\033[0m")
+            else:
+                print(f"\033[91mOops! The key '{data_key}' does not exist. Make sure the key is correct.\033[0m")
+                print(f"\033[93mTip: Use a valid key path like 'users' to get specific user data.\033[0m")
+        else:
+            if self.db:
+                csv_path = self.csv_exporter.export(self.db, "full_database_export.csv")
+                if csv_path:
+                    print(f"\033[92mFile created: {csv_path}\033[0m")
+                else:
+                    print("\033[91mOops! Could not export the database to CSV.\033[0m")
+            else:
+                print("\033[91mOops! The database is empty. Nothing to export.\033[0m")
 
     # ==================================================
     #                DATA VALIDATION
