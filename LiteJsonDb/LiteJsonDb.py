@@ -12,12 +12,15 @@ import os
 import base64
 import logging
 import shutil
+from cryptography.fernet import Fernet
 from typing import Any, Dict, Optional, Union
 from .utils import (
     convert_to_datetime, get_or_default, key_exists_or_add, normalize_keys,
     flatten_json, filter_data, sort_data, hash_password, check_password,
     sanitize_output, pretty_print
 )
+
+
 from .modules.search import search_data
 from .modules.tgbot import BackupToTelegram
 from .modules.csv import CSVExporter
@@ -36,7 +39,7 @@ if not os.path.exists(DATABASE_DIR):
 logging.basicConfig(filename=os.path.join(DATABASE_DIR, 'LiteJsonDb.log'), level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class JsonDB:
-    def __init__(self, filename="db.json", backup_filename="db_backup.json", crypted=True):
+    def __init__(self, filename="db.json", backup_filename="db_backup.json", crypted=True,password=None):
         self.filename = os.path.join(DATABASE_DIR, filename)
         self.backup_filename = os.path.join(DATABASE_DIR, backup_filename)
         self.crypted = crypted
@@ -44,6 +47,11 @@ class JsonDB:
         self.observers = {}
         self.csv_exporter = CSVExporter(DATABASE_DIR)
         self._load_db()
+
+        self.password = password
+        self.fernet = None
+        if self.password:
+            self.fernet = Fernet(base64.urlsafe_b64encode(self.password.encode().ljust(32)))  # clé de 32 octets
     
     # ==================================================
     #               ENCRYPTION/DECRYPTION
@@ -54,16 +62,14 @@ class JsonDB:
     # Changing this could cause compatibility issues if users update our package. 
     # Let's avoid that mess, shall we?
     # ==================================================
-    def _encrypt(self, data: Dict[str, Any]) -> str:
-        """Encode data to base64 for fun. Just a playful way to 'encrypt' our data!"""
+    def _encrypt(self, data: Dict[str, Any]) -> bytes:
         json_data = json.dumps(data).encode('utf-8')
-        encoded_data = base64.b64encode(json_data).decode('utf-8')
-        return encoded_data
+        encrypted_data = self.fernet.encrypt(json_data)
+        return encrypted_data
 
-    def _decrypt(self, encoded_data: str) -> Dict[str, Any]:
-        """Decode data from base64 for fun. Decoding our playful 'encryption'!"""
-        decoded_data = base64.b64decode(encoded_data.encode('utf-8')).decode('utf-8')
-        return json.loads(decoded_data)
+    def _decrypt(self, encrypted_data: bytes) -> Dict[str, Any]:
+        decrypted_data = self.fernet.decrypt(encrypted_data)
+        return json.loads(decrypted_data.decode('utf-8'))
 
     # ==================================================
     #               DATABASE OPERATIONS
@@ -71,32 +77,24 @@ class JsonDB:
     # ==================================================
     def _load_db(self) -> None:
         """Load the database from the JSON file, or create a new one if it doesn't exist."""
-        if not os.path.exists(self.filename):
-            try:
-                with open(self.filename, 'w') as file:
-                    json.dump({}, file)
-            except OSError as e:
-                print(f"\033[91mOops! Unable to create the database file. Make sure you have the correct permissions.\033[0m")
-                print(f"\033[93mError details: {e}\033[0m")
-                raise
         try:
-            with open(self.filename, 'r') as file:
-                data = json.load(file)
-                if self.crypted and data:
+            with open(self.filename, 'rb' if self.password else 'r') as file: # rb si chiffré
+                data = file.read()
+                if self.password and data:  # Déchiffrer seulement si un mot de passe est défini et si des données existent
                     self.db = self._decrypt(data)
                 else:
-                    self.db = data
-        except (OSError, json.JSONDecodeError) as e:
-            print(f"\033[91mOops! Unable to load the database file. Make sure the file is accessible and contains valid JSON.\033[0m")
+                    self.db = json.loads(data) if data else {} # Gérer le cas de fichier vide
+        except (OSError, json.JSONDecodeError, cryptography.fernet.InvalidToken) as e:
+            print(f"\033[91mOops! Unable to load/decrypt the database file. Check permissions, JSON validity, and password.\033[0m")
             print(f"\033[93mError details: {e}\033[0m")
             raise
 
     def _save_db(self) -> None:
         """Save the database to the JSON file."""
         try:
-            data = self.db if not self.crypted else self._encrypt(self.db)
-            with open(self.filename, 'w') as file:
-                json.dump(data, file, indent=4)
+            data = json.dumps(self.db, indent=4).encode('utf-8') if not self.password else self._encrypt(self.db)
+            with open(self.filename, 'wb' if self.password else 'w') as file: # wb si chiffré
+                file.write(data)
             logging.info(f"Database saved to {self.filename}")
         except OSError as e:
             print(f"\033[91mOops! Unable to save the database file. Make sure you have the correct permissions.\033[0m")
