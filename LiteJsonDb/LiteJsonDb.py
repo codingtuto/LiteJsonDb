@@ -22,6 +22,12 @@ from .modules.search import search_data
 from .modules.tgbot import BackupToTelegram
 from .modules.csv import CSVExporter
 
+# ---  Importations pour le chiffrement PyCryptodome ---
+from Cryptodome.Cipher import AES
+from Cryptodome.Random import get_random_bytes
+from Cryptodome.Protocol.KDF import PBKDF2
+from Cryptodome.Util.Padding import pad, unpad
+
 # LET'S CREATE THE DATABASE FILE
 DATABASE_DIR = 'database'
 if not os.path.exists(DATABASE_DIR):
@@ -36,34 +42,82 @@ if not os.path.exists(DATABASE_DIR):
 logging.basicConfig(filename=os.path.join(DATABASE_DIR, 'LiteJsonDb.log'), level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class JsonDB:
-    def __init__(self, filename="db.json", backup_filename="db_backup.json", crypted=True):
+    def __init__(self, filename="db.json", backup_filename="db_backup.json", encryption_method="base64", encryption_key=None):
         self.filename = os.path.join(DATABASE_DIR, filename)
         self.backup_filename = os.path.join(DATABASE_DIR, backup_filename)
-        self.crypted = crypted
+        self.encryption_method = encryption_method.lower()
+        self.encryption_key = encryption_key
         self.db = {}
         self.observers = {}
         self.csv_exporter = CSVExporter(DATABASE_DIR)
         self._load_db()
-    
+
+        if self.encryption_method == "aes" and self.encryption_key is None:
+          raise ValueError("Pour le chiffrement AES, une clé de chiffrement (encryption_key) est nécessaire.")
+
     # ==================================================
     #               ENCRYPTION/DECRYPTION
-    #                  DO NOT MODIFY
     # --------------------------------------------------
-    # Please do not tamper with the encryption and decryption functionality. 
-    # I've implemented it using base64. 
-    # Changing this could cause compatibility issues if users update our package. 
-    # Let's avoid that mess, shall we?
-    # ==================================================
     def _encrypt(self, data: Dict[str, Any]) -> str:
-        """Encode data to base64 for fun. Just a playful way to 'encrypt' our data!"""
+        """Chiffre les données en utilisant la méthode sélectionnée."""
+        if self.encryption_method == "base64":
+          return self._base64_encrypt(data)
+        elif self.encryption_method == "aes":
+          return self._aes_encrypt(data)
+        else:
+          return json.dumps(data) # Pas de chiffrement
+
+    def _decrypt(self, encoded_data: str) -> Dict[str, Any]:
+        """Déchiffre les données en utilisant la méthode sélectionnée."""
+        if self.encryption_method == "base64":
+          return self._base64_decrypt(encoded_data)
+        elif self.encryption_method == "aes":
+          return self._aes_decrypt(encoded_data)
+        else:
+          return json.loads(encoded_data)
+
+    def _base64_encrypt(self, data: Dict[str, Any]) -> str:
+        """Encode data to base64."""
         json_data = json.dumps(data).encode('utf-8')
         encoded_data = base64.b64encode(json_data).decode('utf-8')
         return encoded_data
 
-    def _decrypt(self, encoded_data: str) -> Dict[str, Any]:
-        """Decode data from base64 for fun. Decoding our playful 'encryption'!"""
+    def _base64_decrypt(self, encoded_data: str) -> Dict[str, Any]:
+        """Decode data from base64."""
         decoded_data = base64.b64decode(encoded_data.encode('utf-8')).decode('utf-8')
         return json.loads(decoded_data)
+
+    def _aes_encrypt(self, data: Dict[str, Any]) -> str:
+        """Chiffre les données avec AES."""
+        cipher, salt = self._create_aes_cipher(self.encryption_key)
+        json_data = json.dumps(data).encode('utf-8')
+        padded_data = pad(json_data, AES.block_size)
+        ciphertext = cipher.encrypt(padded_data)
+        # On retourne le sel, le nonce et les données chiffrées, séparés par des ":"
+        return f"{base64.b64encode(salt).decode('utf-8')}:{base64.b64encode(cipher.nonce).decode('utf-8')}:{base64.b64encode(ciphertext).decode('utf-8')}"
+
+    def _aes_decrypt(self, encoded_data: str) -> Dict[str, Any]:
+        """Déchiffre les données avec AES."""
+        salt_b64, nonce_b64, ciphertext_b64 = encoded_data.split(":")
+        salt = base64.b64decode(salt_b64)
+        nonce = base64.b64decode(nonce_b64)
+        ciphertext = base64.b64decode(ciphertext_b64)
+        cipher = self._get_aes_cipher(self.encryption_key, salt, nonce)
+        decrypted_data = unpad(cipher.decrypt(ciphertext), AES.block_size)
+        return json.loads(decrypted_data.decode('utf-8'))
+
+    def _create_aes_cipher(self, key: str):
+      """Crée un cipher AES avec une clé dérivée du mot de passe."""
+      salt = get_random_bytes(16)
+      derived_key = PBKDF2(key, salt, dkLen=32, count=1000000)  # Dérivation de clé
+      cipher = AES.new(derived_key, AES.MODE_CBC)
+      return cipher, salt
+
+    def _get_aes_cipher(self, key: str, salt: bytes, nonce: bytes):
+      """Récupère un cipher AES à partir du sel et du nonce."""
+      derived_key = PBKDF2(key, salt, dkLen=32, count=1000000) # Dérivation de clé identique
+      cipher = AES.new(derived_key, AES.MODE_CBC, iv=nonce)
+      return cipher
 
     # ==================================================
     #               DATABASE OPERATIONS
@@ -82,7 +136,7 @@ class JsonDB:
         try:
             with open(self.filename, 'r') as file:
                 data = json.load(file)
-                if self.crypted and data:
+                if data:
                     self.db = self._decrypt(data)
                 else:
                     self.db = data
@@ -94,7 +148,7 @@ class JsonDB:
     def _save_db(self) -> None:
         """Save the database to the JSON file."""
         try:
-            data = self.db if not self.crypted else self._encrypt(self.db)
+            data = self._encrypt(self.db)
             with open(self.filename, 'w') as file:
                 json.dump(data, file, indent=4)
             logging.info(f"Database saved to {self.filename}")
@@ -347,8 +401,8 @@ class JsonDB:
         """Get the entire database, optionally in raw format."""
         if raw:
             return self.db
-        if self.crypted:
-            return self._decrypt(self._encrypt(self.db))
+        if self.encryption_method != "none":
+          return self._decrypt(self._encrypt(self.db))
         return self.db
 
     # ==================================================
@@ -518,3 +572,22 @@ class JsonDB:
     @staticmethod
     def pretty_print(data):
         return JsonDB.call_utility_function('pretty_print', data)
+
+    def migrate_data(self, new_encryption_method: str, new_encryption_key: Optional[str] = None) -> None:
+        """Migre les données vers une nouvelle méthode de chiffrement."""
+        if new_encryption_method == "aes" and new_encryption_key is None:
+            raise ValueError("Pour le chiffrement AES, une clé de chiffrement (new_encryption_key) est nécessaire.")
+
+        # On déchiffre les données avec l'ancienne méthode
+        decrypted_data = self._decrypt(self._encrypt(self.db))
+
+        # On met à jour la méthode et la clé de chiffrement
+        self.encryption_method = new_encryption_method
+        self.encryption_key = new_encryption_key
+
+        # On chiffre les données avec la nouvelle méthode
+        self.db = self._decrypt(self._encrypt(decrypted_data))
+
+        # On sauvegarde la base de données
+        self._save_db()
+        print(f"Données migrées vers la méthode de chiffrement : {new_encryption_method}")
