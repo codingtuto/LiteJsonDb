@@ -1,4 +1,3 @@
-```markdown
 # LiteJsonDb: Your Go-To Lightweight JSON Database
 ![illustration](https://telegra.ph/file/374450a4f36c217b3a20b.jpg)
 ![PyPi downloads](https://img.shields.io/pypi/dm/LiteJsonDb.svg) 
