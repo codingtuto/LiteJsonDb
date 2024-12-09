@@ -93,16 +93,16 @@ class JsonDB:
         json_data = json.dumps(data).encode('utf-8')
         padded_data = pad(json_data, AES.block_size)
         ciphertext = cipher.encrypt(padded_data)
-        # On retourne le sel, le nonce et les données chiffrées, séparés par des ":"
-        return f"{base64.b64encode(salt).decode('utf-8')}:{base64.b64encode(cipher.nonce).decode('utf-8')}:{base64.b64encode(ciphertext).decode('utf-8')}"
+        # On retourne le sel, le IV et les données chiffrées, séparés par des ":"
+        return f"{base64.b64encode(salt).decode('utf-8')}:{base64.b64encode(cipher.iv).decode('utf-8')}:{base64.b64encode(ciphertext).decode('utf-8')}"
 
     def _aes_decrypt(self, encoded_data: str) -> Dict[str, Any]:
         """Déchiffre les données avec AES."""
-        salt_b64, nonce_b64, ciphertext_b64 = encoded_data.split(":")
+        salt_b64, iv_b64, ciphertext_b64 = encoded_data.split(":")
         salt = base64.b64decode(salt_b64)
-        nonce = base64.b64decode(nonce_b64)
+        iv = base64.b64decode(iv_b64)
         ciphertext = base64.b64decode(ciphertext_b64)
-        cipher = self._get_aes_cipher(self.encryption_key, salt, nonce)
+        cipher = self._get_aes_cipher(self.encryption_key, salt, iv)
         decrypted_data = unpad(cipher.decrypt(ciphertext), AES.block_size)
         return json.loads(decrypted_data.decode('utf-8'))
 
@@ -113,10 +113,10 @@ class JsonDB:
       cipher = AES.new(derived_key, AES.MODE_CBC)
       return cipher, salt
 
-    def _get_aes_cipher(self, key: str, salt: bytes, nonce: bytes):
+    def _get_aes_cipher(self, key: str, salt: bytes, iv: bytes):
       """Récupère un cipher AES à partir du sel et du nonce."""
       derived_key = PBKDF2(key, salt, dkLen=32, count=1000000) # Dérivation de clé identique
-      cipher = AES.new(derived_key, AES.MODE_CBC, iv=nonce)
+      cipher = AES.new(derived_key, AES.MODE_CBC, iv=iv)
       return cipher
 
     # ==================================================
@@ -578,16 +578,16 @@ class JsonDB:
         if new_encryption_method == "aes" and new_encryption_key is None:
             raise ValueError("Pour le chiffrement AES, une clé de chiffrement (new_encryption_key) est nécessaire.")
 
-        # On déchiffre les données avec l'ancienne méthode
+        
         decrypted_data = self._decrypt(self._encrypt(self.db))
 
-        # On met à jour la méthode et la clé de chiffrement
+        
         self.encryption_method = new_encryption_method
         self.encryption_key = new_encryption_key
 
-        # On chiffre les données avec la nouvelle méthode
+        
         self.db = self._decrypt(self._encrypt(decrypted_data))
 
-        # On sauvegarde la base de données
+        
         self._save_db()
         print(f"Données migrées vers la méthode de chiffrement : {new_encryption_method}")
