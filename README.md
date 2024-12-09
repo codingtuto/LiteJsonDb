@@ -11,36 +11,40 @@
 [![Wiki](https://img.shields.io/badge/wiki-Documentation-blue.svg)](https://github.com/codingtuto/LiteJsonDb/wiki)
 
 ---
+> [!NOTE]
+> We’ve just added some awesome new utilities to `LiteJsonDb` to make your coding even smoother. For a quick overview and examples, check out our [wiki](https://github.com/codingtuto/LiteJsonDb/wiki/LiteJsonDb-Utility-Functions) for all the details.
+---
 
 ## :eyes: Overview
 
-LiteJsonDb is a lightweight, user-friendly JSON database designed for simplicity and ease of use. Inspired by Firestore, it offers real-time data management capabilities without the complexities of larger database systems. LiteJsonDb is perfect for small projects, rapid prototyping, or any scenario requiring straightforward JSON data storage and retrieval. It now features robust encryption options, seamless backups, comprehensive error handling, and helpful utility functions.
+Hey there! Welcome to **LiteJsonDb**, your friendly, lightweight JSON-based database. Inspired by the simplicity and real-time capabilities of Firestore, LiteJsonDb makes managing your data a breeze. It's packed with features like encryption, backups, and solid error handling—all without the heavy lifting.
 
 ## :thinking: Why LiteJsonDb?
 
-When you need a simple, efficient way to manage JSON data without the overhead of a full-blown database, LiteJsonDb is the perfect solution. It's lightweight, easy to integrate, and provides the essential features you need for many common use cases.
+Let's face it: sometimes you don't need a complex database setup. Maybe you're building a small project, a quick prototype, or you just want a straightforward way to store and retrieve JSON data. LiteJsonDb is here for those moments. It's simple, efficient, and gets the job done without any fuss.
 
 ## :hammer_and_wrench: Features
 
-- **Easy Data Management**: CRUD (Create, Read, Update, Delete) operations are simple and intuitive.
-- **Robust Encryption**: Choose between Base64 encoding (default for backward compatibility) or strong AES encryption for enhanced security.
-- **Backup and Restore**: Automatic backups and easy restoration ensure data safety.
-- **Subcollections**: Organize data hierarchically for better structure and management.
-- **Friendly Error Handling**: Clear, informative error messages simplify debugging.
-- **Data Search**: Easily search for values across the entire database or within specific keys.
-- **Telegram Backup**: Securely back up your database directly to a Telegram chat.
-- **CSV Export**: Export data to CSV format for analysis and sharing.
-- **Utility Functions**: Convenient functions for common tasks like date conversion, data filtering, sorting, and more. See the [wiki](https://github.com/codingtuto/LiteJsonDb/wiki/LiteJsonDb-Utility-Functions) for details.
+- **Easy Data Management**: Add, edit, retrieve, and delete data with just a few lines of code.
+- **Data Encryption**: Keep your data secure with optional encryption (base64 or AES).
+- **Backup and Restore**: Automatic backups to keep your data safe. Backup to Telegram.
+- **Subcollections**: Organize your data in neat, nested structures.
+- **Friendly Error Handling**: Helpful, colorful error messages to guide you.
+- **Data Search**: Search for specific values within your database.
+- **CSV Export**: Export your data to CSV format.
+
+> [!NOTE]
+> LiteJsonDb makes managing JSON data simple and enjoyable. Whether you're building a small app or just need a lightweight data storage solution, LiteJsonDb has you covered. Enjoy! 
 
 ## :man_technologist: Installation
 
-Install via pip:
+Getting started is super easy. Just install the package via pip:
 
 ```bash
 pip install litejsondb
 ```
 
-Upgrade to the latest version:
+To upgrade to a newer version, use:
 
 ```bash
 pip install --upgrade litejsondb
@@ -50,104 +54,210 @@ pip install --upgrade litejsondb
 
 ### :white_check_mark: Initial Setup
 
-Import and initialize:
+First, import the `JsonDB` class and initialize your database:
 
 ```python
 import LiteJsonDb
 
-# Default (Base64 encryption)
+# Initialize with base64 encryption (default)
 db = LiteJsonDb.JsonDB()  
 
-# No encryption
+# Initialize with AES encryption (requires a key)
+db = LiteJsonDb.JsonDB(encryption_method="aes", encryption_key="your_secret_key")
+
+# Initialize without encryption
 db = LiteJsonDb.JsonDB(encryption_method="none")
 
-# AES Encryption (Recommended)
-db = LiteJsonDb.JsonDB(encryption_method="aes", encryption_key="your_strong_password") 
+# Migrate data to a new encryption method (e.g., from base64 to AES)
+# db.migrate_data(new_encryption_method="aes", new_encryption_key="your_new_secret_key")
 ```
 
-**Important:**  For AES encryption, store your `encryption_key` securely (environment variables or a secrets manager). **Do not** hardcode it in your application.
-
-### :repeat: Data Migration (If Upgrading from Older Versions)
-
-To migrate data from Base64 to AES encryption:
-
-```python
-db = LiteJsonDb.JsonDB() # Opens with the old encryption method if it exists
-db.migrate_data("aes", "your_strong_password")
-```
-
-### 🤗 Basic Operations (Same as before - examples updated for clarity)
+### 🤗 Basic Operations
 
 #### :heavy_plus_sign: Setting Data
 
 ```python
-db.set_data("users", {}) # Creates an empty collection
-db.set_data("users/1", {"name": "Alice", "age": 30})
-db.set_data("products/123", {"name": "Awesome Gadget", "price": 99.99})
+# Set data without extra data
+db.set_data("posts")
+
+# Set data with extra data
+db.set_data("users/1", {"name": "Aliou", "age": 20})
+db.set_data("users/2", {"name": "Coder", "age": 25})
 ```
 
 #### :writing_hand: Editing Data
 
 ```python
-db.edit_data("users/1", {"city": "New York"}) # Merges with existing data
+# Edit data
+db.edit_data("users/1", {"name": "Alex"})
 ```
 
 #### :ballot_box_with_check: Getting Data
 
 ```python
-user = db.get_data("users/1")
-print(user)  # Output: {'name': 'Alice', 'age': 30, 'city': 'New York'}
-product_name = db.get_data("products/123/name")
-print(product_name) # Output: Awesome Gadget
+# Get data
+print(db.get_data("users/1"))  # Output: {'name': 'Alex', 'age': 20}
+print(db.get_data("users/2"))  # Output: {'name': 'Coder', 'age': 25}
+
+# Access specific data using paths
+print(db.get_data("users/1/name"))  # Output: Alex
 ```
 
 #### :wastebasket: Removing Data
 
 ```python
-db.remove_data("products/123")
+# Remove data
+db.remove_data("users/2")
 ```
 
 #### :package: Full Database Retrieval
 
 ```python
-data = db.get_db() # Returns a decrypted copy of the database
-raw_data = db.get_db(raw=True) # Returns the database as is (in memory)
+# Get the full database (readable format)
+print(db.get_db(raw=True))
+
+# Get the full database (encrypted/raw format depending on initialization)
+print(db.get_db())
 ```
 
-### :file_folder: Working with Subcollections (Same as before)
+## 🔍 Search Data
 
-(Keep the Subcollections section as it is in the original README, it's already well-explained)
+This feature allows efficient searching for values within the database.
 
-## :bug: Error Handling (Slightly updated)
+```python
+# Basic search (anywhere in the database)
+results = db.search_data("Aliou")
+print("Basic Search Results:", results)
 
-LiteJsonDb provides helpful error messages for various scenarios:
-
-- **Key Exists/Key Not Found**:  Clear messages and tips for using `set_data` vs. `edit_data`.
-- **File Issues**: Guidance on resolving file permission errors.
-- **Encryption Errors**: Specific messages related to encryption/decryption problems (e.g., incorrect password for AES).
-- **CSV Export Errors**:  Provides specific messages for `export_to_csv` errors, such as attempts to export non-existent keys.
-
-## :open_file_folder: Example Project Structure (Same as before)
-
-## :shipit: Example `main.py` (Updated)
-
-(Update the `main.py` example to reflect the new encryption options and the data migration example)
-
-## :memo: Understanding `set_data` vs. Subcollections (Same as before)
-
-## :hugs: Contributions and Community (Same as before)
-
-## :heart: Donations and Support: How You Can Help (Same as before)
-
+# Key-specific search
+results = db.search_data("Aliou", key="users")
+print("Key-specific Search Results:", results)
 ```
 
-Key changes:
+## 📦 Backup to Telegram
 
-*   **Emphasis on Encryption Choices:**  Clearly explains the base64 (legacy) and AES options.
-*   **Data Migration:** Adds a section on how to migrate existing data to AES.
-*   **Security Warning about AES Key:**  Stresses the importance of secure key storage.
-*   **Updated Examples:**  Clarifies data manipulation examples.
-*   **Concise Feature List:**  More streamlined and highlights the key improvements.
-*   **Updated Error Handling Section:** Includes mention of encryption-related errors and CSV export errors.
+Securely back up your database to a Telegram chat.
 
-This revised README is clearer, more comprehensive, and accurately reflects the enhanced capabilities of LiteJsonDb.
+```python
+# Replace with your bot token and chat ID
+db.backup_to_telegram("YOUR_BOT_TOKEN", "YOUR_CHAT_ID") 
+```
+
+See the "Backup to Telegram (new)" section above for how to obtain your token and chat ID.
+
+## 📦 Export to CSV
+
+Export data to CSV format for easy sharing and analysis.
+
+```python
+# Export a specific collection
+db.export_to_csv("users") 
+
+# Export the entire database
+db.export_to_csv()
+```
+
+## 🐛 Error Handling
+
+LiteJsonDb provides helpful error messages for various scenarios (key exists, key not found, file issues).
+
+### :file_folder: Working with Subcollections
+
+#### :heavy_plus_sign: Setting Subcollection Data
+
+```python
+db.set_subcollection("groups", "1", {"name": "Admins"})
+```
+
+#### :writing_hand: Editing Subcollection Data
+
+```python
+db.edit_subcollection("groups", "1", {"description": "Admin group"})
+```
+
+#### :ballot_box_with_check: Getting Subcollection Data
+
+```python
+print(db.get_subcollection("groups"))       # Entire subcollection
+print(db.get_subcollection("groups", "1"))  # Specific item
+```
+
+#### :wastebasket: Removing Subcollection Data
+
+```python
+db.remove_subcollection("groups", "1")     # Specific item
+db.remove_subcollection("groups")          # Entire subcollection
+```
+
+## :memo: Understanding `set_data` vs. Subcollections
+
+<details>
+<summary>Click to expand</summary>
+
+### `set_data`
+
+The `set_data` method is used to add or update data at a specific path. If the key already exists, you will need to use `edit_data` to modify it. This method is great for simple key-value pairs or straightforward data structures.
+
+<pre>
+# Set data
+db.set_data("users/1", {"name": "Aliou", "age": 20})
+</pre>
+
+### Subcollections
+
+Subcollections, on the other hand, are used to create and manage nested structures within your database. They allow you to group related data under a parent key, providing a more organized way to handle complex relationships. Subcollections are essentially collections within collections.
+
+<pre>
+# Set subcollection data
+db.set_subcollection("groups", "1", {"name": "Admins"})
+</pre>
+
+### Key Differences
+
+- **Structure**: `set_data` is used for flat data structures, while subcollections allow for hierarchical organization.
+- **Usage**: Use `set_data` for simple key-value pairs and `set_subcollection` when you need nested collections.
+- **Organization**: Subcollections help in maintaining a clear structure and grouping related data together, making it easier to manage and query complex relationships.
+
+By understanding these differences, you can choose the appropriate method for your data management needs, ensuring a well-organized and efficient database.
+
+</details>
+
+## 🧾 TODO: What's Next for LiteJsonDb
+
+We’re always striving to enhance LiteJsonDb. Here’s what’s on our radar:
+
+- [x] Add support for data encryption to secure JSON content.
+- [x] Implement automatic backups to ensure data safety.
+- [x] Improve error handling with friendly, colorful messages.
+- [x] Added french language documentation
+- [x] Implement automated backups to send data to a Telegram bot.
+- [ ] Fix any bugs that are discovered to ensure smooth operation.
+- [ ] Reach 100 stars on GitHub and celebrate by adding more awesome features! 
+
+## :hugs: Contributions and Community
+We welcome contributions, suggestions, and feedback to make LiteJsonDb even better! If you have ideas for improvements or want to fix a bug, feel free to:
+
+- **Submit a Pull Request (PR)**: Contribute new features or bug fixes by creating a pull request. Your changes will help improve LiteJsonDb for everyone!
+- **Report Issues**: If you encounter any bugs or issues, please open an issue in the repository. Provide as much detail as possible so we can address it swiftly.
+- **Suggest Features**: Have an idea for a new feature? Let us know! We’re always open to suggestions on how to enhance LiteJsonDb.
+
+> Your feedback and contributions are greatly appreciated and help us keep LiteJsonDb growing and improving.
+
+## :heart: Donations and Support: How You Can Help
+
+LiteJsonDb is a labor of love, and your support can make a big difference! If you’re enjoying the project and want to show your appreciation, here are a few ways you can help:
+
+### Fork and Star the Repo
+
+One of the best ways to support LiteJsonDb is to fork the repository and give it a star on GitHub. It’s like a virtual high-five and helps us spread the word about the project. Plus, it shows us that you value the work we’re doing!
+
+### Consider a Donation
+
+If you’re feeling extra generous and want to contribute financially, we’d be incredibly grateful. Donations help us cover costs and keep the project running smoothly. You can support us in the following ways:
+
+- **PayPal**: Send a donation directly to [my PayPal account](https://paypal.me/djibson35). Every little bit helps and is greatly appreciated!
+- **Bitcoin**: Prefer cryptocurrency? You can also donate using Bitcoin to the following address: `1Nn15EttfT2dVBisj8bXCnBiXjcqk1ehWR`.
+
+> Your support, whether through a star, a fork, or a donation, helps keep LiteJsonDb alive and thriving. Thank you for being awesome!
+
+Cheers and happy coding! :rocket:
