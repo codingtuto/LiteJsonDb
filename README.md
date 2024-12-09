@@ -26,342 +26,168 @@ Let's face it: sometimes you don't need a complex database setup. Maybe you're b
 ## :hammer_and_wrench: Features
 
 - **Easy Data Management**: Add, edit, retrieve, and delete data with just a few lines of code.
-- **Data Encryption**: Keep your data secure with optional encryption. 
-- **Backup and Restore**: Automatic backups to keep your data safe.
+- **Data Encryption**: Keep your data secure with optional encryption (base64 or AES).
+- **Backup and Restore**: Automatic backups to keep your data safe. Backup to Telegram.
 - **Subcollections**: Organize your data in neat, nested structures.
 - **Friendly Error Handling**: Helpful, colorful error messages to guide you.
+- **Data Search**: Search for specific values within your database.
+- **CSV Export**: Export your data to CSV format.
 
 > [!NOTE]
 > LiteJsonDb makes managing JSON data simple and enjoyable. Whether you're building a small app or just need a lightweight data storage solution, LiteJsonDb has you covered. Enjoy! 
 
 ## :man_technologist: Installation
 
-Getting started is super easy. Just install the package via pip and you're good to go:
+Getting started is super easy. Just install the package via pip:
 
-<pre>
+```bash
 pip install litejsondb
-</pre>
+```
 
-A new version is available type `pip install --upgrade litejsondb` to update
+To upgrade to a newer version, use:
+
+```bash
+pip install --upgrade litejsondb
+```
 
 ## :crystal_ball: Usage
 
 ### :white_check_mark: Initial Setup
 
-First things first, import the `JsonDB` class and initialize your database:
+First, import the `JsonDB` class and initialize your database:
 
-<pre>
+```python
 import LiteJsonDb
 
-# Initialize the database with encryption enabled
-db = LiteJsonDb.JsonDB(crypted=True)
-</pre>
+# Initialize with base64 encryption (default)
+db = LiteJsonDb.JsonDB()  
+
+# Initialize with AES encryption (requires a key)
+db = LiteJsonDb.JsonDB(encryption_method="aes", encryption_key="your_secret_key")
+
+# Initialize without encryption
+db = LiteJsonDb.JsonDB(encryption_method="none")
+
+# Migrate data to a new encryption method (e.g., from base64 to AES)
+# db.migrate_data(new_encryption_method="aes", new_encryption_key="your_new_secret_key")
+```
 
 ### 🤗 Basic Operations
 
 #### :heavy_plus_sign: Setting Data
 
-Adding data is a breeze. Just use the `set_data` method. If the key already exists, you'll get a friendly reminder to use `edit_data` instead.
-
-<pre>
-# Set data without extra-data
+```python
+# Set data without extra data
 db.set_data("posts")
 
-# Set data with extra-data
+# Set data with extra data
 db.set_data("users/1", {"name": "Aliou", "age": 20})
 db.set_data("users/2", {"name": "Coder", "age": 25})
-</pre>
+```
 
 #### :writing_hand: Editing Data
 
-Need to update data? No problem. Use the `edit_data` method. It merges the new data with the existing data, so nothing gets lost.
-
-<pre>
+```python
 # Edit data
 db.edit_data("users/1", {"name": "Alex"})
-</pre>
+```
 
 #### :ballot_box_with_check: Getting Data
 
-Retrieving data is as simple as it gets. Use the `get_data` method.
-
-<pre>
+```python
 # Get data
 print(db.get_data("users/1"))  # Output: {'name': 'Alex', 'age': 20}
 print(db.get_data("users/2"))  # Output: {'name': 'Coder', 'age': 25}
-</pre>
 
-> [!TIP]
-> You can directly access specific data by using paths in the `get_data` method. For example, to get only the user's name, you can do:
-<pre>
-print(db.get_data("users/1/name"))
-</pre>
-
-Here, you get the user's name without retrieving other parts of the data.
+# Access specific data using paths
+print(db.get_data("users/1/name"))  # Output: Alex
+```
 
 #### :wastebasket: Removing Data
 
-Need to delete something? The `remove_data` method has you covered.
-
-<pre>
+```python
 # Remove data
 db.remove_data("users/2")
-</pre>
+```
 
 #### :package: Full Database Retrieval
 
-Want to see everything? Use the `get_db` method. Set `raw=True` if you want the data in a readable format.
-
-<pre>
-# Get the full database
+```python
+# Get the full database (readable format)
 print(db.get_db(raw=True))
-</pre>
 
-## 🔍 Search Data (new)
+# Get the full database (encrypted/raw format depending on initialization)
+print(db.get_db())
+```
 
-This new feature was integrated in response to the [issue](https://github.com/codingtuto/LiteJsonDb/issues/2) raised about improving data search capabilities. This function allows you to search for values within your database, either across the entire database or within a specific key. This enhancement makes finding your data much easier and more efficient.
+## 🔍 Search Data
 
-### How to use
+This feature allows efficient searching for values within the database.
 
-The `search_data` function provides two main modes of search:
-
-1. **Basic Search**: Search for a value anywhere in the database.
-2. **Key-specific Search**: Search for a value within a specific key.
-
-### Integration
-
-1. **Use the `search_data` Function**
-
-   Here’s how you can use the `search_data` function:
-
-   - **Basic Search**: To search for a value across the entire database, use the following code:
-
-     ```python
-     results = db.search_data("Aliou")
-     print(results)
-     ```
-
-     This will search for the value `"Aliou"` throughout all the keys in your database.
-
-   - **Key-specific Search**: To search for a value within a specific key, use the following code:
-
-     ```python
-     results = db.search_data("Aliou", key="users")
-     print(results)
-     ```
-
-     This will search for the value `"Aliou"` specifically within the `"users"` key.
-
-## 📦 Backup to Telegram (new)
-
-This feature was integrated to help you easily back up your files, such as your database, directly to a Telegram chat. By using this method, you can safely back up important files automatically to a Telegram conversation.
-
-### How to use
-
-The `backup_to_telegram` function allows you to back up any file to Telegram via a bot. You will need two essential pieces of information: the **bot token** and the **chat ID** where the file will be sent.
-
-### Integration
-
-1. **Obtain your Telegram bot token**  
-   To use this feature, you first need to create a bot on Telegram using [@BotFather](https://t.me/BotFather). Once your bot is created, BotFather will provide you with a token that you will use for authentication.
-
-2. **Find your chat ID**  
-   You can get your chat ID by using [@MissRose_bot](https://t.me/MissRose_bot) and typing `/id`. It will give you your unique chat ID.
-
-3. **Use the `backup_to_telegram` Function**  
-   Here's how to use the `backup_to_telegram` function:
-
-   <pre><code>python
-   db.backup_to_telegram("your_token", "your_chat_id")
-   </code></pre>
-
-   This will send the backup file to the specified chat ID using your Telegram bot.
-
-4. **Where to find your token and chat ID**:
-   - **Telegram bot token**: Get this from [@BotFather](https://t.me/BotFather).
-   - **Telegram chat ID**: Get this by interacting with [@MissRose_bot](https://t.me/MissRose_bot) and using the `/id` command.
-
-## 📦 Export to CSV (new)
-
-This feature was integrated to allow you to easily export your data to CSV format. This makes it convenient to share and analyze your data outside the application by creating CSV files that can be opened with spreadsheet software like Excel or Google Sheets.
-
-### How to use
-
-The `export_to_csv` method allows you to export either a specific collection or the entire database. Here’s how to use it:
-
-### Integration
-1. **Prepare your data**  
-   Ensure that the data you want to export is well-structured. You can have your data as dictionaries or lists of dictionaries. For example:
-
-   <pre><code>
-   # Adding example data
-   db.set_data("users", {
-       "1": {"name": "Aliou", "age": 20},
-       "2": {"name": "Coder", "age": 25}
-   })
-   </code></pre>
-
-2. **Use the `export_to_csv` Method**  
-   Here’s how to call the method to export data:
-
-   #### Export a Specific Collection
-
-   To export a specific collection, you need to provide the corresponding key:
-
-   <pre><code>
-   # Export a specific collection
-   db.export_to_csv("users") 
-   </code></pre>
-
-   #### Export the Entire Database
-
-   If you want to export all the data from the database, you can call the method without parameters:
-
-   <pre><code>
-   # Export the entire database
-   db.export_to_csv()  
-   </code></pre>
-
-## 🐛 Error Handling
-
-This feature is experimental and may not support all data formats. If you attempt to export a collection that does not exist, an error message will be displayed:
-
-If you receive errors like this: `Oops! An error occurred during CSV export: ...` we recommend opening an issue in our repository so we can address it. Your feedback is valuable, and we appreciate your patience as we continue to improve this feature!
-
-### :file_folder: Working with Subcollections
-
-## :file_folder: Subcollections
-
-In LiteJsonDb, subcollections are a way to organize your data hierarchically. Think of them as nested structures that allow you to group related data together under a parent key. This feature is especially useful when you want to manage complex data relationships without losing the simplicity of JSON.
-
-### :thinking: What Are Subcollections?
-
-Subcollections are essentially collections within collections. For example, if you have a main collection of users, you might want to organize their posts into separate subcollections. Here’s how you can work with them:
-
-- **Setting Subcollection Data**: Create and populate a subcollection under a specified parent key.
-- **Editing Subcollection Data**: Update existing items in a subcollection.
-- **Getting Subcollection Data**: Retrieve the data stored within a subcollection.
-- **Removing Subcollection Data**: Delete items or entire subcollections.
-
-Using subcollections helps you maintain a clear structure in your data, making it easier to manage and query.
-
-#### :heavy_plus_sign: Setting Subcollection Data
-
-Organize your data with subcollections. Easy peasy.
-
-<pre>
-# Set subcollection data
-db.set_subcollection("groups", "1", {"name": "Admins"})
-</pre>
-
-#### :writing_hand: Editing Subcollection Data
-
-Editing items within a subcollection? No sweat.
-
-<pre>
-# Edit subcollection data
-db.edit_subcollection("groups", "1", {"description": "Admin group"})
-</pre>
-
-#### :ballot_box_with_check: Getting Subcollection Data
-
-Need to retrieve specific subcollections or items? We've got you.
-
-<pre>
-# Get subcollection data
-print(db.get_subcollection("groups"))
-
-# Get custom item from the subcollection data
-print(db.get_subcollection("groups", "1"))
-</pre>
-
-#### :wastebasket: Removing Subcollection Data
-
-Removing items from subcollections is just as simple.
-
-<pre>
-# Remove subcollection data
-db.remove_subcollection("groups", "1")
-</pre>
-
-## :bug: Error Handling
-
-LiteJsonDb is all about being helpful. Here are some friendly, colorful error messages to guide you:
-
-- **Key Exists**: If you try to set data with an existing key, it will suggest using `edit_data`.
-- **Key Not Found**: If a key does not exist when you try to get or remove data, it will notify you with a tip on how to proceed.
-- **File Issues**: If there are file permission problems, it will guide you on how to fix them.
-
-## :open_file_folder: Example Project Structure
-
-Here's how your project might look if your initialized `LiteJssonDb`:
-
-<pre>
-project/
-│
-├── database/
-│   ├── db.json
-│   ├── db_backup.json
-│   └── LiteJsonDb.log
-└── your_code.py
-</pre>
-
-## :shipit: Example `main.py`
-
-Let's put it all together with an example `main.py` file:
-
-<pre>
-import LiteJsonDb
-  
-# Initialize the database with encryption enabled
-db =  LiteJsonDb.JsonDB(crypted=True)
-
-# Add some initial data
-# Set data without extra-data
-db.set_data("posts")
-
-# Set data with extra-data
-db.set_data("users/1", {"name": "Aliou", "age": 20})
-db.set_data("users/2", {"name": "Coder", "age": 25})
-
-# Modify existing data
-db.edit_data("users/1", {"name": "Alex"})
-
-# Retrieve and print data
-print(db.get_data("users/1"))
-print(db.get_data("users/2"))
-
-# Remove data
-db.remove_data("users/2")
-
-# Perform a basic search
+```python
+# Basic search (anywhere in the database)
 results = db.search_data("Aliou")
 print("Basic Search Results:", results)
 
-# Perform a key-specific search
+# Key-specific search
 results = db.search_data("Aliou", key="users")
 print("Key-specific Search Results:", results)
+```
 
-# Retrieve the full database
-print(db.get_db(raw=True))
+## 📦 Backup to Telegram
 
-# Work with subcollections
-db.set_subcollection("groups", "1", {"name": "Admins"})
-db.edit_subcollection("groups", "1", {"description": "Admin group"})
-print(db.get_subcollection("groups"))
-db.remove_subcollection("groups", "1")
+Securely back up your database to a Telegram chat.
 
-# IF YOU WANT TO BACKUP THE DATABASE ON TELEGRAM
-# db.backup_to_telegram("your_token", "your_chat_id")
+```python
+# Replace with your bot token and chat ID
+db.backup_to_telegram("YOUR_BOT_TOKEN", "YOUR_CHAT_ID") 
+```
 
-""" IF YOU WANT TO EXPORT YOUR DATA ON CSV FORMAT
+See the "Backup to Telegram (new)" section above for how to obtain your token and chat ID.
+
+## 📦 Export to CSV
+
+Export data to CSV format for easy sharing and analysis.
+
+```python
 # Export a specific collection
 db.export_to_csv("users") 
 
 # Export the entire database
 db.export_to_csv()
-"""
-</pre>
+```
+
+## 🐛 Error Handling
+
+LiteJsonDb provides helpful error messages for various scenarios (key exists, key not found, file issues).
+
+### :file_folder: Working with Subcollections
+
+#### :heavy_plus_sign: Setting Subcollection Data
+
+```python
+db.set_subcollection("groups", "1", {"name": "Admins"})
+```
+
+#### :writing_hand: Editing Subcollection Data
+
+```python
+db.edit_subcollection("groups", "1", {"description": "Admin group"})
+```
+
+#### :ballot_box_with_check: Getting Subcollection Data
+
+```python
+print(db.get_subcollection("groups"))       # Entire subcollection
+print(db.get_subcollection("groups", "1"))  # Specific item
+```
+
+#### :wastebasket: Removing Subcollection Data
+
+```python
+db.remove_subcollection("groups", "1")     # Specific item
+db.remove_subcollection("groups")          # Entire subcollection
+```
 
 ## :memo: Understanding `set_data` vs. Subcollections
 
