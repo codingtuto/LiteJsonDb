@@ -38,15 +38,13 @@ def search_data(data: Dict[str, Any], search_value: Any, key: Optional[str] = No
             for index, item in enumerate(d):
                 search_recursive(item, value, f"{current_key}/{index}")
     if key:
-        if key in data:
-            search_recursive(data[key], search_value)
+        if key not in data:
+            print(f"🐛 \033[91mWhoops! Key '{key}' went on a vacation and we can't find it for search!\033[0m")
         else:
-            print(f"\033[91mOops! The key '{key}' does not exist in the data. Search is not possible.\033[0m")
-            print(f"\033[93mTip: Verify the key or check available keys in the data structure.\033[0m")
+            search_recursive(data[key], search_value)
     else:
         search_recursive(data, search_value)
 
     if not results:
-        print(f"\033[93mNo matches found for '{search_value}'.\033[0m")
-        print(f"\033[93mTip: Try adjusting your search criteria or ensure the value exists.\033[0m")
+         print(f"🔍 \033[93mLooks like '{search_value}' is playing hide-and-seek and we couldn't find it!\033[0m")
     return results

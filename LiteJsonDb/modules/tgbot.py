@@ -1,12 +1,3 @@
-"""
-
-████████╗░██████╗░██████╗░░█████╗░████████╗░░░██████╗░██╗░░░██╗
-╚══██╔══╝██╔════╝░██╔══██╗██╔══██╗╚══██╔══╝░░░██╔══██╗╚██╗░██╔╝
-░░░██║░░░██║░░██╗░██████╦╝██║░░██║░░░██║░░░░░░██████╔╝░╚████╔╝░
-░░░██║░░░██║░░╚██╗██╔══██╗██║░░██║░░░██║░░░░░░██╔═══╝░░░╚██╔╝░░
-░░░██║░░░╚██████╔╝██████╦╝╚█████╔╝░░░██║░░░██╗██║░░░░░░░░██║░░░
-░░░╚═╝░░░░╚═════╝░╚═════╝░░╚════╝░░░░╚═╝░░░╚═╝╚═╝░░░░░░░░╚═╝░░░
-"""
 import requests
 import os
 from datetime import datetime
@@ -41,20 +32,18 @@ class BackupToTelegram:
             response_data = response.json()
 
             if response.status_code == 401:
-                print(f"\033[91mOops! Invalid token. Please check the bot token. If this were a movie, it’d be called: 'The Token is Not Enough'...\033[0m")
+                print(f"🐛 \033[91mWhoops! Invalid token. Like trying to use the wrong key on a treasure chest!\033[0m")
                 return False
             elif response_data.get("error_code") == 400 and "chat not found" in response_data.get("description", "").lower():
-                print(f"\033[91mOops! Invalid chat ID '{self.chat_id}'.\033[0m")
-                print(f"\033[93mTip: Make sure you've started a conversation with the bot using `/start` in the Telegram chat. It’s like saying 'hi' before asking for a favor!\033[0m")
+                print(f"🐛 \033[91mWhoops! Invalid chat ID '{self.chat_id}'. Maybe the bot is in another dimension!\033[0m")
                 return False
             elif not response_data.get("ok"):
-                print(f"\033[91mOops! Something went wrong: {response_data.get('description', 'Unknown error')}. Like a mystery novel without the ending.\033[0m")
-                return False
+                 print(f"🐛 \033[91mWhoops! Something went wrong: {response_data.get('description', 'Unknown error')}. Like a plot twist no one saw coming!\033[0m")
+                 return False
 
             return True
         except requests.exceptions.RequestException as e:
-            print(f"\033[91mOops! Could not connect to Telegram API: {e}.\033[0m")
-            print(f"\033[93mTip: Check your internet connection or see if the Telegram API decided to take a coffee break.\033[0m")
+            print(f"🐛 \033[91mWhoops! Could not connect to Telegram API. Is the internet taking a break?: {e}\033[0m")
             return False
 
     def backup_to_telegram(self, backup_filepath: str) -> None:
@@ -65,8 +54,12 @@ class BackupToTelegram:
         - backup_filepath (str): The path to the backup file you want to send.
         """
         if not os.path.exists(backup_filepath):
-            print(f"\033[91mOops! The backup file '{backup_filepath}' does not exist. It's like trying to teleport without a destination!\033[0m")
-            print(f"\033[93mTip: Double-check the file path to ensure the file is there. Maybe it took a vacation?\033[0m")
+            print(f"🐛 \033[91mWhoops! Backup file '{backup_filepath}' does not exist. It’s like trying to find a unicorn!\033[0m")
+            return
+
+        file_size_mb = os.path.getsize(backup_filepath) / (1024 * 1024)  # File size in MB
+        if file_size_mb > 50:
+            print(f"🐛 \033[91mWhoops! File size ({file_size_mb:.2f} MB) exceeds Telegram's limit (50 MB). Time to go on a diet!\033[0m")
             return
 
         try:
@@ -74,10 +67,12 @@ class BackupToTelegram:
                 filename = os.path.basename(backup_filepath)
                 file_size = os.path.getsize(backup_filepath) / 1024  # File size in KB
                 date_str = datetime.now().strftime("%-d/%-m/%Y at %H:%M")
+                
+                try:
+                    os_info = platform.system() + " " + platform.release()
+                except Exception:
+                    os_info = "Unknown"
             
-                # Handle system information, default to "Unknown" if not found
-                os_info = platform.system() + " " + platform.release() if platform.system() and platform.release() else "Unknown"
-
                 caption = (f"<b>🔄 Backup created on {date_str}</b>\n"
                            f"<b>Filename:</b> {filename}\n"
                            f"<b>File size:</b> {file_size:.2f} KB\n"
@@ -88,10 +83,9 @@ class BackupToTelegram:
                 success = self._send_request(files, caption)
 
                 if success:
-                    print(f"\033[92mSuccess! Backup file '{filename}' (Size: {file_size:.2f} KB) was successfully sent to Telegram chat ID {self.chat_id}. Your system: {os_info}. Everything is safe and sound.\033[0m")
+                     print(f"🎉 \033[92mHooray! Backup file '{filename}' (Size: {file_size:.2f} KB) was successfully beamed to Telegram! System: {os_info}. All systems go!\033[0m")
                 else:
-                    print(f"\033[91mFailed to send the backup file to Telegram. Something went sideways.\033[0m")
+                     print(f"🐛 \033[91mWhoops! Sending the backup file to Telegram went sideways! Looks like it missed the flight.\033[0m")
         
         except Exception as e:
-            print(f"\033[91mOops! An unexpected error occurred: {e}. Maybe it’s time to check under the hood?\033[0m")
-            print(f"\033[93mTip: Make sure the file is accessible, and there are no permission issues. Computers can be a bit picky with permissions!\033[0m")
+            print(f"🐛 \033[91mWhoops! An unexpected error occurred: {e}. Time to investigate this anomaly!\033[0m")

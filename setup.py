@@ -1,30 +1,22 @@
-"""
-░██████╗███████╗████████╗██╗░░░██╗██████╗░░░░██████╗░██╗░░░██╗
-██╔════╝██╔════╝╚══██╔══╝██║░░░██║██╔══██╗░░░██╔══██╗╚██╗░██╔╝
-╚█████╗░█████╗░░░░░██║░░░██║░░░██║██████╔╝░░░██████╔╝░╚████╔╝░
-░╚═══██╗██╔══╝░░░░░██║░░░██║░░░██║██╔═══╝░░░░██╔═══╝░░░╚██╔╝░░
-██████╔╝███████╗░░░██║░░░╚██████╔╝██║░░░░░██╗██║░░░░░░░░██║░░░
-╚═════╝░╚══════╝░░░╚═╝░░░░╚═════╝░╚═╝░░░░░╚═╝╚═╝░░░░░░░░╚═╝░░░
-"""
-from setuptools import setup, find_packages
-import readme_renderer.markdown 
+from setuptools import setup
 
-long_description = ""
-with open('README.md', encoding='utf-8') as file:
-    long_description = file.read()
+with open('README.md', encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name="LiteJsonDb",
-    version="3.4.0",
+    version="3.4.5",
     author="Coding Team",
     author_email="codingteamgroup@gmail.com",
-    license='MIT',
-    description='A lightweight JSON-based database system inspired by Firestore (Firebase). It\'s designed for simplicity and ease of use.',
+    description="A lightweight JSON-based database system. It's designed for simplicity and ease of use.",
     long_description=long_description,
     long_description_content_type='text/markdown',
     url="https://github.com/codingtuto/LiteJsonDb/",
-    packages=find_packages(exclude=["testing"]),
-    python_requires='>=3.7',
+    packages=["LiteJsonDb"], 
+    python_requires=">=3.7",
+    install_requires=[
+        "cryptography",  
+    ],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",

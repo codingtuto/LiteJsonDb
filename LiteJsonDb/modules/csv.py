@@ -25,5 +25,5 @@ class CSVExporter:
                     writer.writerows(data if isinstance(data, list) else [data])
             return filepath
         except Exception as e:
-            print(f"\033[91mOops! An error occurred during CSV export: {e}\033[0m")
+            print(f"🐛 \033[91mWhoops! An error occurred during CSV export. It seems that something went wrong: {e}\033[0m")
             return ""

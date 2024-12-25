@@ -44,18 +44,79 @@ pip install litejsondb
 
 A new version is available type `pip install --upgrade litejsondb` to update
 
-## :crystal_ball: Usage
+# :crystal_ball: Usage  
 
-### :white_check_mark: Initial Setup
+## :white_check_mark: Initial Setup  
 
-First things first, import the `JsonDB` class and initialize your database:
+First things first, import the `JsonDB` class and initialize your database:  
 
-<pre>
+<pre><code>
 import LiteJsonDb
 
 # Initialize the database with encryption enabled
+db = LiteJsonDb.JsonDB()  # Some parameters can be passed here
+</code></pre>  
+
+---
+
+<details>
+<summary>Click to view code and features overview</summary>
+
+## :gear: Parameters Overview  
+
+### Logging  
+Enable logging to track all database operations. This is useful for debugging or monitoring activities:  
+
+<pre><code>
+db = LiteJsonDb.JsonDB(enable_log=True)
+</code></pre>  
+
+### Automatic Backups  
+Avoid losing your data by enabling automatic backups. A backup file is created whenever you save changes:  
+
+<pre><code>
+db = LiteJsonDb.JsonDB(auto_backup=True)
+</code></pre>  
+
+### BASE64 Encryption 
+By default if you pass crypted to True il will use the minimal encryption system (Base64)
+<pre><code>
 db = LiteJsonDb.JsonDB(crypted=True)
-</pre>
+</code></pre>  
+
+### Fernet Encryption  
+Secure your data with Fernet encryption
+<pre><code>
+db = LiteJsonDb.JsonDB(crypted=True, encryption_method="fernet", encryption_key="your-secret-key")
+</code></pre>  
+If no key is provided, the system will raise an error to ensure your data remains secure.  
+</details>  
+
+
+## :memo: Summary Example  
+
+Combine logging, automatic backups, and encryption in one workflow:  
+
+<details>
+<summary>Click to view code</summary>
+
+<pre><code>
+import LiteJsonDb
+
+# Initialize the database with logging, auto-backup, and encryption
+db = LiteJsonDb.JsonDB(
+    enable_log=True, 
+    auto_backup=True, 
+    crypted=True, 
+    encryption_method="fernet",
+    encryption_key="my-secure-key"
+)
+</code></pre>
+
+</details>  
+
+---
+
 
 ### 🤗 Basic Operations
 
@@ -314,7 +375,7 @@ Let's put it all together with an example `main.py` file:
 import LiteJsonDb
   
 # Initialize the database with encryption enabled
-db =  LiteJsonDb.JsonDB(crypted=True)
+db =  LiteJsonDb.JsonDB()
 
 # Add some initial data
 # Set data without extra-data
