@@ -10,17 +10,13 @@
 import os
 import logging
 from typing import Any, Dict, Optional
-from .handler.encrypt import Encryption
-from .handler.db_operations import DatabaseOperations
-from .handler.method import DataManipulation
-from .modules.search import search_data
-from .modules.tgbot import BackupToTelegram
-from .modules.csv import CSVExporter
-from .utility.utils import (
+from LiteJsonDb import (
+    JsonDB, Encryption, DatabaseOperations, DataManipulation,
+    CSVExporter, search_data, BackupToTelegram,
     convert_to_datetime, get_or_default, key_exists_or_add, normalize_keys,
     flatten_json, filter_data, sort_data, hash_password, check_password,
     sanitize_output, pretty_print
-) 
+)
 
 DATABASE_DIR = 'database'
 if not os.path.exists(DATABASE_DIR):

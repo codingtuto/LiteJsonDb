@@ -15,15 +15,15 @@
 > We’ve just added some awesome new utilities to `LiteJsonDb` to make your coding even smoother. For a quick overview and examples, check out our [wiki](https://github.com/codingtuto/LiteJsonDb/wiki/LiteJsonDb-Utility-Functions) for all the details.
 ---
 
-## :eyes: Overview
+## 👀 Overview
 
 Hey there! Welcome to **LiteJsonDb**, your friendly, lightweight JSON-based database. Inspired by the simplicity and real-time capabilities of Firestore, LiteJsonDb makes managing your data a breeze. It's packed with features like encryption, backups, and solid error handling—all without the heavy lifting.
 
-## :thinking: Why LiteJsonDb?
+## 🤔 Why LiteJsonDb?
 
 Let's face it: sometimes you don't need a complex database setup. Maybe you're building a small project, a quick prototype, or you just want a straightforward way to store and retrieve JSON data. LiteJsonDb is here for those moments. It's simple, efficient, and gets the job done without any fuss.
 
-## :hammer_and_wrench: Features
+## 🛠️ Features
 
 - **Easy Data Management**: Add, edit, retrieve, and delete data with just a few lines of code.
 - **Data Encryption**: Keep your data secure with optional encryption. 
@@ -34,7 +34,7 @@ Let's face it: sometimes you don't need a complex database setup. Maybe you're b
 > [!NOTE]
 > LiteJsonDb makes managing JSON data simple and enjoyable. Whether you're building a small app or just need a lightweight data storage solution, LiteJsonDb has you covered. Enjoy! 
 
-## :man_technologist: Installation
+## 👨‍💻 Installation
 
 Getting started is super easy. Just install the package via pip and you're good to go:
 
@@ -44,9 +44,9 @@ pip install litejsondb
 
 A new version is available type `pip install --upgrade litejsondb` to update
 
-# :crystal_ball: Usage  
+# 🔮 Usage  
 
-## :white_check_mark: Initial Setup  
+## ✅ Initial Setup  
 
 First things first, import the `JsonDB` class and initialize your database:  
 
@@ -62,7 +62,7 @@ db = LiteJsonDb.JsonDB()  # Some parameters can be passed here
 <details>
 <summary>Click to view code and features overview</summary>
 
-## :gear: Parameters Overview  
+## ⚙️ Parameters Overview  
 
 ### Logging  
 Enable logging to track all database operations. This is useful for debugging or monitoring activities:  
@@ -93,7 +93,7 @@ If no key is provided, the system will raise an error to ensure your data remain
 </details>  
 
 
-## :memo: Summary Example  
+## 📝 Summary Example  
 
 Combine logging, automatic backups, and encryption in one workflow:  
 
@@ -120,7 +120,7 @@ db = LiteJsonDb.JsonDB(
 
 ### 🤗 Basic Operations
 
-#### :heavy_plus_sign: Setting Data
+#### ➕ Setting Data
 
 Adding data is a breeze. Just use the `set_data` method. If the key already exists, you'll get a friendly reminder to use `edit_data` instead.
 
@@ -133,7 +133,7 @@ db.set_data("users/1", {"name": "Aliou", "age": 20})
 db.set_data("users/2", {"name": "Coder", "age": 25})
 </pre>
 
-#### :writing_hand: Editing Data
+#### ✍️ Editing Data
 
 Need to update data? No problem. Use the `edit_data` method. It merges the new data with the existing data, so nothing gets lost.
 
@@ -142,7 +142,7 @@ Need to update data? No problem. Use the `edit_data` method. It merges the new d
 db.edit_data("users/1", {"name": "Alex"})
 </pre>
 
-#### :ballot_box_with_check: Getting Data
+#### ☑️ Getting Data
 
 Retrieving data is as simple as it gets. Use the `get_data` method.
 
@@ -160,7 +160,7 @@ print(db.get_data("users/1/name"))
 
 Here, you get the user's name without retrieving other parts of the data.
 
-#### :wastebasket: Removing Data
+#### 🗑️ Removing Data
 
 Need to delete something? The `remove_data` method has you covered.
 
@@ -169,7 +169,7 @@ Need to delete something? The `remove_data` method has you covered.
 db.remove_data("users/2")
 </pre>
 
-#### :package: Full Database Retrieval
+#### 📦 Full Database Retrieval
 
 Want to see everything? Use the `get_db` method. Set `raw=True` if you want the data in a readable format.
 
@@ -238,10 +238,6 @@ The `backup_to_telegram` function allows you to back up any file to Telegram via
 
    This will send the backup file to the specified chat ID using your Telegram bot.
 
-4. **Where to find your token and chat ID**:
-   - **Telegram bot token**: Get this from [@BotFather](https://t.me/BotFather).
-   - **Telegram chat ID**: Get this by interacting with [@MissRose_bot](https://t.me/MissRose_bot) and using the `/id` command.
-
 ## 📦 Export to CSV (new)
 
 This feature was integrated to allow you to easily export your data to CSV format. This makes it convenient to share and analyze your data outside the application by creating CSV files that can be opened with spreadsheet software like Excel or Google Sheets.
@@ -289,13 +285,13 @@ This feature is experimental and may not support all data formats. If you attemp
 
 If you receive errors like this: `Oops! An error occurred during CSV export: ...` we recommend opening an issue in our repository so we can address it. Your feedback is valuable, and we appreciate your patience as we continue to improve this feature!
 
-### :file_folder: Working with Subcollections
+### 📁 Working with Subcollections
 
-## :file_folder: Subcollections
+## 📁 Subcollections
 
 In LiteJsonDb, subcollections are a way to organize your data hierarchically. Think of them as nested structures that allow you to group related data together under a parent key. This feature is especially useful when you want to manage complex data relationships without losing the simplicity of JSON.
 
-### :thinking: What Are Subcollections?
+### 🤔 What Are Subcollections?
 
 Subcollections are essentially collections within collections. For example, if you have a main collection of users, you might want to organize their posts into separate subcollections. Here’s how you can work with them:
 
@@ -306,7 +302,7 @@ Subcollections are essentially collections within collections. For example, if y
 
 Using subcollections helps you maintain a clear structure in your data, making it easier to manage and query.
 
-#### :heavy_plus_sign: Setting Subcollection Data
+#### ➕ Setting Subcollection Data
 
 Organize your data with subcollections. Easy peasy.
 
@@ -315,7 +311,7 @@ Organize your data with subcollections. Easy peasy.
 db.set_subcollection("groups", "1", {"name": "Admins"})
 </pre>
 
-#### :writing_hand: Editing Subcollection Data
+#### ✍️ Editing Subcollection Data
 
 Editing items within a subcollection? No sweat.
 
@@ -324,7 +320,7 @@ Editing items within a subcollection? No sweat.
 db.edit_subcollection("groups", "1", {"description": "Admin group"})
 </pre>
 
-#### :ballot_box_with_check: Getting Subcollection Data
+#### ☑️ Getting Subcollection Data
 
 Need to retrieve specific subcollections or items? We've got you.
 
@@ -336,7 +332,7 @@ print(db.get_subcollection("groups"))
 print(db.get_subcollection("groups", "1"))
 </pre>
 
-#### :wastebasket: Removing Subcollection Data
+#### 🗑️ Removing Subcollection Data
 
 Removing items from subcollections is just as simple.
 
@@ -345,7 +341,7 @@ Removing items from subcollections is just as simple.
 db.remove_subcollection("groups", "1")
 </pre>
 
-## :bug: Error Handling
+## 🐛 Error Handling
 
 LiteJsonDb is all about being helpful. Here are some friendly, colorful error messages to guide you:
 
@@ -353,7 +349,7 @@ LiteJsonDb is all about being helpful. Here are some friendly, colorful error me
 - **Key Not Found**: If a key does not exist when you try to get or remove data, it will notify you with a tip on how to proceed.
 - **File Issues**: If there are file permission problems, it will guide you on how to fix them.
 
-## :open_file_folder: Example Project Structure
+## 📂 Example Project Structure
 
 Here's how your project might look if your initialized `LiteJssonDb`:
 
@@ -367,7 +363,7 @@ project/
 └── your_code.py
 </pre>
 
-## :shipit: Example `main.py`
+## 🚀 Example `main.py`
 
 Let's put it all together with an example `main.py` file:
 
@@ -424,7 +420,7 @@ db.export_to_csv()
 """
 </pre>
 
-## :memo: Understanding `set_data` vs. Subcollections
+## 📝 Understanding `set_data` vs. Subcollections
 
 <details>
 <summary>Click to expand</summary>
@@ -469,7 +465,7 @@ We’re always striving to enhance LiteJsonDb. Here’s what’s on our radar:
 - [ ] Fix any bugs that are discovered to ensure smooth operation.
 - [ ] Reach 100 stars on GitHub and celebrate by adding more awesome features! 
 
-## :hugs: Contributions and Community
+## 🤗 Contributions and Community
 We welcome contributions, suggestions, and feedback to make LiteJsonDb even better! If you have ideas for improvements or want to fix a bug, feel free to:
 
 - **Submit a Pull Request (PR)**: Contribute new features or bug fixes by creating a pull request. Your changes will help improve LiteJsonDb for everyone!
@@ -478,7 +474,7 @@ We welcome contributions, suggestions, and feedback to make LiteJsonDb even bett
 
 > Your feedback and contributions are greatly appreciated and help us keep LiteJsonDb growing and improving.
 
-## :heart: Donations and Support: How You Can Help
+## ❤️ Donations and Support: How You Can Help
 
 LiteJsonDb is a labor of love, and your support can make a big difference! If you’re enjoying the project and want to show your appreciation, here are a few ways you can help:
 
@@ -495,4 +491,4 @@ If you’re feeling extra generous and want to contribute financially, we’d be
 
 > Your support, whether through a star, a fork, or a donation, helps keep LiteJsonDb alive and thriving. Thank you for being awesome!
 
-Cheers and happy coding! :rocket:
+Cheers and happy coding! 🚀

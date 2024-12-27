@@ -8,10 +8,16 @@ authors = [
     {name = "Coding Team", email = "codingteamgroup@gmail.com"}
 ]
 description = "A lightweight JSON-based database system. It's designed for simplicity and ease of use."
-version = "3.4.5"
+version = "3.4.6"
 license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
     "cryptography"
 ]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["LiteJsonDb"]

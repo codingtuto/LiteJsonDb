@@ -236,10 +236,6 @@ La fonction `backup_to_telegram` vous permet de sauvegarder n'importe quel fichi
 
     Ceci enverra le fichier de sauvegarde à l'identifiant de conversation spécifié en utilisant votre bot Telegram.
 
-4.  **Où trouver votre token et identifiant de conversation** :
-    -   **Token de bot Telegram** : Obtenez-le auprès de [@BotFather](https://t.me/BotFather).
-    -   **Identifiant de conversation Telegram** : Obtenez-le en interagissant avec [@MissRose_bot](https://t.me/MissRose_bot) et en utilisant la commande `/id`.
-
 ## 📦 Exportation vers CSV (nouveau)
 
 Cette fonctionnalité a été intégrée pour vous permettre d'exporter facilement vos données au format CSV. Cela facilite le partage et l'analyse de vos données en dehors de l'application en créant des fichiers CSV qui peuvent être ouverts avec des tableurs comme Excel ou Google Sheets.
