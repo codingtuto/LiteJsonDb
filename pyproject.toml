@@ -8,7 +8,7 @@ authors = [
     {name = "Coding Team", email = "codingteamgroup@gmail.com"}
 ]
 description = "A lightweight JSON-based database system. It's designed for simplicity and ease of use."
-version = "3.5.1"
+version = "3.5.2"
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
