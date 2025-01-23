@@ -12,10 +12,13 @@ def search_data(data: Dict[str, Any], search_value: Any, key: Optional[str] = No
     """
     Search for a value in a nested dictionary or within a specific key.
 
-    :param data: The dictionary to search within.
-    :param search_value: The value to search for.
-    :param key: Optional. If provided, search within this specific key.
-    :return: A dictionary containing matching results.
+    Args:
+        data (Dict[str, Any]): The dictionary to search within.
+        search_value (Any): The value to search for.
+        key (Optional[str]): If provided, search within this specific key.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing matching results.
     """
     results = {}
 
@@ -23,9 +26,10 @@ def search_data(data: Dict[str, Any], search_value: Any, key: Optional[str] = No
         """
         Recursively search through the dictionary.
 
-        :param d: The dictionary to search through.
-        :param value: The value to search for.
-        :param current_key: The current path of keys being traversed.
+        Args:
+            d (Any): The dictionary to search through.
+            value (Any): The value to search for.
+            current_key (str): The current path of keys being traversed.
         """
         if isinstance(d, dict):
             for k, v in d.items():
@@ -37,14 +41,16 @@ def search_data(data: Dict[str, Any], search_value: Any, key: Optional[str] = No
         elif isinstance(d, list):
             for index, item in enumerate(d):
                 search_recursive(item, value, f"{current_key}/{index}")
+
     if key:
         if key not in data:
-            print(f"🐛 \033[91mWhoops! Key '{key}' went on a vacation and we can't find it for search!\033[0m")
+            print(f"\033[91m#bugs\033[0m Key '{key}' not found for search.")
         else:
             search_recursive(data[key], search_value)
     else:
         search_recursive(data, search_value)
 
     if not results:
-         print(f"🔍 \033[93mLooks like '{search_value}' is playing hide-and-seek and we couldn't find it!\033[0m")
+         print(f"\033[90m#info\033[0m Value '{search_value}' not found.")
+
     return results
