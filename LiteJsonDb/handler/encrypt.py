@@ -94,7 +94,7 @@ class Encryption:
         Returns:
             str: The base64 encoded string.
         """
-        json_data = json.dumps(data).encode('utf-8')
+        json_data = json.dumps(data, separators=(',', ':')).encode('utf-8')
         return base64.b64encode(json_data).decode('utf-8')
 
     def _base64_decrypt(self, encoded_data: str) -> Dict[str, Any]:
@@ -120,7 +120,7 @@ class Encryption:
         Returns:
             str: The Fernet encrypted string.
         """
-        json_data = json.dumps(data).encode('utf-8')
+        json_data = json.dumps(data, separators=(',', ':')).encode('utf-8')
         return self.fernet.encrypt(json_data).decode('utf-8')
 
     def _fernet_decrypt(self, encoded_data: str) -> Dict[str, Any]:
