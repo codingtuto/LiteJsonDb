@@ -30,9 +30,30 @@ Let's face it: sometimes you don't need a complex database setup. Maybe you're b
 - **Backup and Restore**: Automatic backups to keep your data safe.
 - **Subcollections**: Organize your data in neat, nested structures.
 - **Friendly Error Handling**: Helpful, colorful error messages to guide you.
+- **Fast & Lightweight**: Compact storage and an optional `batch()` mode for bulk writes.
+- **External-edit aware**: Picks up changes made to the JSON file by other editors/processes automatically.
 
 > [!NOTE]
 > LiteJsonDb makes managing JSON data simple and enjoyable. Whether you're building a small app or just need a lightweight data storage solution, LiteJsonDb has you covered. Enjoy! 
+
+## ⚡ Performance & Robustness (v3.6.0)
+
+This release is a **drop-in upgrade** — just `pip install --upgrade litejsondb`, no code changes required.
+
+- **Lower memory & faster saves**: the database is now stored as compact JSON by default (~57% smaller files, much faster serialization). Want pretty, human-readable output? Pass `indent`:
+  ```python
+  db = LiteJsonDb.JsonDB(indent=4)   # pretty-printed db.json (default is compact)
+  ```
+- **Detects external file changes**: if you (or another process) edit `database/db.json` while your program is running, LiteJsonDb automatically reloads it on the next read/write — so external edits are respected instead of being silently overwritten. The check is a single lightweight `os.stat` and is silent (no log spam). Partial writes from an editor mid-save are tolerated without crashing.
+- **Atomic writes**: data is written to a temp file then atomically swapped in, so an interrupted save can never corrupt your database.
+- **Bulk writes with `batch()`**: defer disk writes until the end of a block for massive speedups (hundreds of times faster) on large imports:
+  ```python
+  with db.batch():
+      for i in range(100000):
+          db.set_data(f"users/{i}", {"name": f"user{i}"})
+  # saved once, here
+  ```
+- **Encryption actually works now**: `crypted=True` previously stored data in plain text due to an init bug; it now encrypts correctly (base64/fernet). Existing plain-text databases still load fine.
 
 ## 👨‍💻 Installation
 

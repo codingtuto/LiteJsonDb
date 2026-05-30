@@ -1,3 +1,4 @@
+import copy
 from typing import Any, Dict, Optional, Union
 
 class DataManipulation:
@@ -27,16 +28,14 @@ class DataManipulation:
             bool: True if the data is valid, False otherwise.
         """
         if isinstance(data, dict):
-            types = {}
+            allowed_types = (str, int, float, list, dict, bool, type(None))
             for key, value in data.items():
                 if not isinstance(key, str):
                     print(f"\033[91m#bugs\033[0m Key '{key}' must be a string. Did we stumble upon a non-string key?")
                     return False
-                if key in types and types[key] != type(value):
-                    print(f"\033[91m#bugs\033[0m Conflicting types for key '{key}'.")
+                if not isinstance(value, allowed_types):
                     return False
-                types[key] = type(value)
-            return all(isinstance(value, (str, int, float, list, dict, bool, None)) for value in data.values())
+            return True
         print(f"\033[91m#bugs\033[0m Data must be a dictionary.")
         return False
 
@@ -82,6 +81,7 @@ class DataManipulation:
         Returns:
             bool: True if the key exists, False otherwise.
         """
+        self._sync_if_changed()
         keys = key.split('/')
         data = self.db
         for k in keys:
@@ -101,6 +101,7 @@ class DataManipulation:
         Returns:
             Optional[Any]: The data if it exists, None otherwise.
         """
+        self._sync_if_changed()
         keys = key.split('/')
         data = self.db
         for k in keys:
@@ -119,6 +120,7 @@ class DataManipulation:
             key (str): The key to set (path separated by "/").
             value (Optional[Any], optional): The value to set. Defaults to None, initializing with an empty dictionary.
         """
+        self._sync_if_changed()
         if value is None:
             value = {}
 
@@ -232,6 +234,7 @@ class DataManipulation:
         Args:
             key (str): The key to remove (path separated by "/").
         """
+        self._sync_if_changed()
         keys = key.split('/')
         data = self.db
         for k in keys[:-1]:
@@ -262,10 +265,15 @@ class DataManipulation:
         Returns:
             Union[Dict[str, Any], str]: The entire database.
         """
+        self._sync_if_changed()
         if raw:
             return self.db
         if self.crypted:
-            return self._decrypt(self._encrypt(self.db))
+            # Return an independent copy so callers can't mutate the live store.
+            # Previously this round-tripped through _encrypt/_decrypt (full JSON
+            # serialize + base64 + parse, several full copies of the DB); a deep
+            # copy yields the same result far faster and with much less memory.
+            return copy.deepcopy(self.db)
         return self.db
 
     # ==================================================
@@ -284,6 +292,7 @@ class DataManipulation:
         Returns:
             Optional[Any]: The subcollection, or the item. None if it doesn't exist.
         """
+        self._sync_if_changed()
         collection = self.db.get(collection_name, {})
         if item_id is not None:
             if item_id in collection:
@@ -302,6 +311,7 @@ class DataManipulation:
             item_id (str): The item ID.
             value (Any): The value to set.
         """
+        self._sync_if_changed()
         if not self.validate_data(value):
             print(f"\033[91m#bugs\033[0m Invalid data format.  Your data should look like this: {{'name': 'Aliou', 'age': 30}}.")
             return
@@ -326,6 +336,7 @@ class DataManipulation:
             item_id (str): The item ID.
             value (Any): The new value.
         """
+        self._sync_if_changed()
         if not self.validate_data(value):
             print(f"\033[91m#bugs\033[0m Invalid data format. Your data should look like this: {{'name': 'Aliou', 'age': 30}}.")
             return
@@ -348,6 +359,7 @@ class DataManipulation:
             collection_name (str): The subcollection name.
             item_id (Optional[str], optional): The item ID. Defaults to None.
         """
+        self._sync_if_changed()
         if item_id is None:
             if collection_name in self.db:
                 del self.db[collection_name]

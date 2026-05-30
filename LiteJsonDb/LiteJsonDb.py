@@ -1,5 +1,6 @@
 import os
 import logging
+from contextlib import contextmanager
 from typing import Any, Dict, Optional
 from .handler import (
     Encryption, DatabaseOperations, DataManipulation
@@ -40,10 +41,14 @@ class JsonDB(Encryption, DatabaseOperations, DataManipulation):
         crypted (bool): Enables encryption for the database if set to True. Defaults to False.
         encryption_method (str): The encryption method to use ('base64' or 'fernet'). Defaults to 'base64'.
         encryption_key (Optional[str]): The encryption key to use (required for fernet). Defaults to None.
+        indent (Optional[int]): Indentation for the on-disk JSON. Defaults to None, which writes
+            compact JSON (much faster to serialize and smaller on disk). Pass an int (e.g. 4)
+            for human-readable, pretty-printed output.
 
     """
     def __init__(self, filename="db.json", backup_filename="db_backup.json", 
-                 enable_log=False, auto_backup=False, crypted=False, encryption_method='base64', encryption_key: Optional[str] = None):
+                 enable_log=False, auto_backup=False, crypted=False, encryption_method='base64', encryption_key: Optional[str] = None,
+                 indent: Optional[int] = None):
         if encryption_method not in ['base64', 'fernet']:
             raise ValueError(f"\033[90m#bugs\033[0m Unknown encryption method: '{encryption_method}'!")
 
@@ -51,16 +56,46 @@ class JsonDB(Encryption, DatabaseOperations, DataManipulation):
         self.backup_filename = os.path.join(DATABASE_DIR, backup_filename)
         self.enable_log = enable_log
         self.auto_backup = auto_backup
-        self.crypted = crypted
         self.encryption_method = encryption_method
-        self.db = {}
-        self.observers = {}
+        self.json_indent = indent
         self.csv_exporter = CSVExporter(DATABASE_DIR)
         setup_logging(self.enable_log)
-        Encryption.__init__(self, encryption_method, encryption_key) 
+        Encryption.__init__(self, encryption_method, encryption_key)
         DatabaseOperations.__init__(self, enable_log, auto_backup)
         DataManipulation.__init__(self)
+        # Set state AFTER the mixin __init__ calls so they cannot clobber it.
+        # (DataManipulation.__init__ resets db/observers/crypted to defaults.)
+        self.crypted = crypted
+        self.db = {}
+        self.observers = {}
+        self._batch_mode = False
         self._load_db()
+
+    @contextmanager
+    def batch(self):
+        """
+        Context manager that defers all disk writes until the block exits.
+
+        Normally every set/edit/remove call rewrites the whole database file,
+        which is O(n) per call. Inside a ``batch()`` block, mutations are applied
+        in memory and the database is persisted (and backed up) only once when the
+        block exits, making bulk operations dramatically faster.
+
+        Example:
+            with db.batch():
+                for i in range(10000):
+                    db.set_data(f"users/{i}", {"name": f"user{i}"})
+        """
+        outer = self._batch_mode
+        self._batch_mode = True
+        try:
+            yield self
+        finally:
+            # Only the outermost batch flushes to disk (supports nesting).
+            self._batch_mode = outer
+            if not outer:
+                self._backup_db()
+                self._save_db()
 
     def backup_to_telegram(self, token: str, chat_id: str):
         """
@@ -86,6 +121,7 @@ class JsonDB(Encryption, DatabaseOperations, DataManipulation):
          Args:
               data_key (Optional[str]): If provided, exports only the data under this key. If None, exports the full database.
         """
+        self._sync_if_changed()
         if data_key:
             if data_key in self.db:
                 data = self.db[data_key]
@@ -116,6 +152,7 @@ class JsonDB(Encryption, DatabaseOperations, DataManipulation):
             Returns:
                 Optional[Dict[str, Any]]: Returns the matching dictionary or None if not found.
         """
+        self._sync_if_changed()
         try:
             result = search_data(self.db, value, key)
             if result:
