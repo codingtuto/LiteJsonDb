@@ -1,494 +1,1442 @@
-# LiteJsonDb : Votre base de données JSON légère de référence
-![illustration](https://telegra.ph/file/374450a4f36c217b3a20b.jpg)
-![Téléchargements PyPi](https://img.shields.io/pypi/dm/LiteJsonDb.svg)
-![Version du package PyPi](https://img.shields.io/pypi/v/LiteJsonDb.svg)
-![Étoiles GitHub](https://img.shields.io/github/stars/codingtuto/LiteJsonDb)
-![Forks GitHub](https://img.shields.io/github/forks/codingtuto/LiteJsonDb)
+# LiteJsonDb
+
+![LiteJsonDb](https://telegra.ph/file/374450a4f36c217b3a20b.jpg)
+
+![Téléchargements PyPI](https://img.shields.io/pypi/dm/LiteJsonDb.svg)
+![Version PyPI](https://img.shields.io/pypi/v/LiteJsonDb.svg)
+![GitHub Stars](https://img.shields.io/github/stars/codingtuto/LiteJsonDb)
+![GitHub Forks](https://img.shields.io/github/forks/codingtuto/LiteJsonDb)
+
+[Documentation française](./README.fr.md) · [Wiki](https://github.com/codingtuto/LiteJsonDb/wiki)
+
+LiteJsonDb est une base de données locale légère basée sur JSON pour les projets Python qui n'ont pas besoin d'un serveur de base de données.
+
+Elle fournit une API simple pour stocker, modifier, récupérer et supprimer des données, tout en proposant des fonctionnalités complémentaires comme :
+
+* le chiffrement des données ;
+* les sauvegardes automatiques ;
+* les sous-collections ;
+* la recherche de données ;
+* l'export CSV ;
+* la sauvegarde vers Telegram ;
+* la journalisation des opérations ;
+* une gestion explicite des erreurs.
+
+L'objectif est de conserver une API simple tout en offrant suffisamment de fonctionnalités pour les scripts, prototypes, outils internes et petites applications.
 
 ---
 
-[![Voir la documentation en Français](https://img.shields.io/badge/Documentation-Fran%C3%A7ais-blue)](./README.fr.md)
-[![Wiki](https://img.shields.io/badge/wiki-Documentation-blue.svg)](https://github.com/codingtuto/LiteJsonDb/wiki)
+## Sommaire
+
+* [Installation](#installation)
+* [Démarrage rapide](#démarrage-rapide)
+* [Configuration](#configuration)
+
+  * [Journalisation](#journalisation)
+  * [Sauvegardes automatiques](#sauvegardes-automatiques)
+  * [Chiffrement](#chiffrement)
+  * [Chiffrement Fernet](#chiffrement-fernet)
+* [Opérations de base](#opérations-de-base)
+
+  * [`set_data`](#set_data)
+  * [`edit_data`](#edit_data)
+  * [`get_data`](#get_data)
+  * [`remove_data`](#remove_data)
+  * [`get_db`](#get_db)
+* [Recherche](#recherche)
+
+  * [`search_data`](#search_data)
+* [Sous-collections](#sous-collections)
+
+  * [`set_subcollection`](#set_subcollection)
+  * [`edit_subcollection`](#edit_subcollection)
+  * [`get_subcollection`](#get_subcollection)
+  * [`remove_subcollection`](#remove_subcollection)
+* [Sauvegarde Telegram](#sauvegarde-telegram)
+* [Export CSV](#export-csv)
+* [Gestion des erreurs](#gestion-des-erreurs)
+* [Structure de projet](#structure-de-projet)
+* [Exemple complet](#exemple-complet)
+* [`set_data` vs sous-collections](#set_data-vs-sous-collections)
+* [Roadmap](#roadmap)
+* [Contribuer](#contribuer)
+* [Soutenir le projet](#soutenir-le-projet)
 
 ---
-> [!NOTE]
-> Nous venons d'ajouter de nouvelles fonctionnalités géniales à `LiteJsonDb` pour rendre votre codage encore plus fluide. Pour un aperçu rapide et des exemples, consultez notre [wiki](https://github.com/codingtuto/LiteJsonDb/wiki/LiteJsonDb-Utility-Functions) pour tous les détails.
----
 
-## :eyes: Aperçu
+## Installation
 
-Salut ! Bienvenue sur **LiteJsonDb**, votre base de données conviviale et légère basée sur JSON. Elle est simple et dotée de fonctionnalités telles que le chiffrement, les sauvegardes et une gestion solide des erreurs, le tout sans les aspects contraignants.
+Installez LiteJsonDb depuis PyPI :
 
-## :thinking: Pourquoi LiteJsonDb ?
-
-Avouons-le : parfois, vous n'avez pas besoin d'une configuration de base de données complexe. Peut-être que vous construisez un petit projet, un prototype rapide, ou que vous voulez simplement une façon simple de stocker et de récupérer des données JSON. LiteJsonDb est là pour ces moments-là. C'est simple, efficace, et ça fait le travail sans chichis.
-
-## :hammer_and_wrench: Fonctionnalités
-
--   **Gestion facile des données** : Ajoutez, modifiez, récupérez et supprimez des données avec seulement quelques lignes de code.
--   **Chiffrement des données** : Gardez vos données en sécurité grâce au chiffrement optionnel.
--   **Sauvegarde et restauration** : Sauvegardes automatiques pour garder vos données en sécurité.
--   **Sous-collections** : Organisez vos données dans des structures imbriquées et ordonnées.
--   **Gestion conviviale des erreurs** : Messages d'erreur colorés et utiles pour vous guider.
-
-> [!NOTE]
-> LiteJsonDb rend la gestion des données JSON simple et agréable. Que vous construisiez une petite application ou que vous ayez simplement besoin d'une solution de stockage de données légère, LiteJsonDb est là pour vous. Profitez-en !
-
-## :man_technologist: Installation
-
-Commencer est super facile. Il suffit d'installer le package via pip et vous êtes prêt à partir :
-
-<pre>
+```bash
 pip install litejsondb
-</pre>
+```
 
-Une nouvelle version est disponible, tapez `pip install --upgrade litejsondb` pour mettre à jour
+Pour mettre à jour une installation existante :
 
-# :crystal_ball: Utilisation
+```bash
+pip install --upgrade litejsondb
+```
 
-## :white_check_mark: Configuration initiale
+Vérifiez ensuite que le package peut être importé :
 
-Tout d'abord, importez la classe `JsonDB` et initialisez votre base de données :
-
-<pre><code>
+```python
 import LiteJsonDb
-
-# Initialiser la base de données avec le chiffrement activé
-db = LiteJsonDb.JsonDB()  # Certains paramètres peuvent être passés ici
-</code></pre>
+```
 
 ---
 
-<details>
-<summary>Cliquez pour voir le code et l'aperçu des paramètres</summary>
+## Démarrage rapide
 
-## :gear: Aperçu des paramètres
+La création d'une base de données ne nécessite qu'une initialisation de `JsonDB`.
 
-### Journalisation
-Activez la journalisation pour suivre toutes les opérations de la base de données. Ceci est utile pour le débogage ou la surveillance des activités :
-
-<pre><code>
-db = LiteJsonDb.JsonDB(enable_log=True)
-</code></pre>
-
-### Sauvegardes automatiques
-Évitez de perdre vos données en activant les sauvegardes automatiques. Un fichier de sauvegarde est créé chaque fois que vous enregistrez des modifications :
-
-<pre><code>
-db = LiteJsonDb.JsonDB(auto_backup=True)
-</code></pre>
-
-### Chiffrement BASE64
-Par défaut, si vous passez `crypted` à `True`, il utilisera le système de chiffrement minimal (Base64)
-<pre><code>
-db = LiteJsonDb.JsonDB(crypted=True)
-</code></pre>
-
-### Chiffrement Fernet
-Sécurisez vos données avec le chiffrement Fernet
-<pre><code>
-db = LiteJsonDb.JsonDB(crypted=True, encryption_method="fernet", encryption_key="votre-clé-secrète")
-</code></pre>
-Si aucune clé n'est fournie, le système générera une erreur pour garantir la sécurité de vos données.
-</details>
-
-## :memo: Exemple récapitulatif
-
-Combinez la journalisation, les sauvegardes automatiques et le chiffrement en un seul flux de travail :
-
-<details>
-<summary>Cliquez pour voir le code</summary>
-
-<pre><code>
+```python
 import LiteJsonDb
 
-# Initialiser la base de données avec la journalisation, la sauvegarde automatique et le chiffrement
+db = LiteJsonDb.JsonDB()
+```
+
+Vous pouvez ensuite créer une collection :
+
+```python
+db.set_data("posts")
+```
+
+Ou créer directement une entrée :
+
+```python
+db.set_data(
+    "users/1",
+    {
+        "name": "Aliou",
+        "age": 20
+    }
+)
+```
+
+Récupérez ensuite les données avec :
+
+```python
+user = db.get_data("users/1")
+
+print(user)
+```
+
+Résultat :
+
+```python
+{
+    "name": "Aliou",
+    "age": 20
+}
+```
+
+---
+
+# Configuration
+
+`JsonDB` accepte plusieurs paramètres permettant d'adapter le comportement de la base de données.
+
+Exemple :
+
+```python
 db = LiteJsonDb.JsonDB(
-    enable_log=True, 
-    auto_backup=True, 
-    crypted=True, 
+    enable_log=True,
+    auto_backup=True,
+    crypted=True,
     encryption_method="fernet",
     encryption_key="ma-clé-sécurisée"
 )
-</code></pre>
+```
 
-</details>
+Les options sont indépendantes. Vous pouvez activer uniquement celles dont votre application a besoin.
 
 ---
 
-### 🤗 Opérations de base
+## Journalisation
 
-#### :heavy_plus_sign: Définition des données
+La journalisation permet d'enregistrer les opérations effectuées par LiteJsonDb.
 
-L'ajout de données est un jeu d'enfant. Utilisez simplement la méthode `set_data`. Si la clé existe déjà, vous recevrez un rappel amical pour utiliser `edit_data` à la place.
+Activez-la avec `enable_log=True` :
 
-<pre>
-# Définir les données sans données supplémentaires
+```python
+db = LiteJsonDb.JsonDB(enable_log=True)
+```
+
+Cette option peut être utile lorsque vous souhaitez :
+
+* suivre les opérations effectuées sur la base ;
+* diagnostiquer un problème ;
+* surveiller le comportement d'une application ;
+* conserver un historique technique des opérations.
+
+Si la journalisation n'est pas nécessaire, laissez l'option désactivée :
+
+```python
+db = LiteJsonDb.JsonDB(enable_log=False)
+```
+
+---
+
+## Sauvegardes automatiques
+
+L'option `auto_backup` permet de créer automatiquement une sauvegarde lorsqu'une modification est enregistrée.
+
+Activation :
+
+```python
+db = LiteJsonDb.JsonDB(auto_backup=True)
+```
+
+Désactivation :
+
+```python
+db = LiteJsonDb.JsonDB(auto_backup=False)
+```
+
+Cette option est particulièrement utile pour les applications dans lesquelles la perte du fichier JSON principal serait problématique.
+
+---
+
+## Chiffrement
+
+LiteJsonDb permet d'activer le chiffrement avec l'option `crypted`.
+
+```python
+db = LiteJsonDb.JsonDB(crypted=True)
+```
+
+Lorsque `crypted=True`, LiteJsonDb utilise par défaut son mécanisme de chiffrement minimal basé sur Base64.
+
+```python
+db = LiteJsonDb.JsonDB(
+    crypted=True
+)
+```
+
+### À propos de Base64
+
+Base64 ne doit pas être considéré comme un mécanisme de chiffrement sécurisé destiné à protéger des données sensibles.
+
+Il s'agit principalement d'un encodage.
+
+Si votre application nécessite une protection cryptographique réelle, utilisez le mode Fernet décrit ci-dessous.
+
+---
+
+## Chiffrement Fernet
+
+LiteJsonDb prend également en charge le chiffrement Fernet.
+
+Exemple :
+
+```python
+db = LiteJsonDb.JsonDB(
+    crypted=True,
+    encryption_method="fernet",
+    encryption_key="votre-clé-secrète"
+)
+```
+
+Les paramètres utilisés sont :
+
+| Paramètre           | Valeur     | Description                       |
+| ------------------- | ---------- | --------------------------------- |
+| `crypted`           | `True`     | Active le chiffrement             |
+| `encryption_method` | `"fernet"` | Sélectionne le chiffrement Fernet |
+| `encryption_key`    | chaîne     | Clé utilisée pour le chiffrement  |
+
+Une clé doit être fournie lorsque Fernet est utilisé.
+
+```python
+db = LiteJsonDb.JsonDB(
+    crypted=True,
+    encryption_method="fernet"
+)
+```
+
+Cette configuration provoquera une erreur si aucune clé n'est disponible.
+
+### Configuration complète
+
+Vous pouvez combiner les différentes options :
+
+```python
+import LiteJsonDb
+
+db = LiteJsonDb.JsonDB(
+    enable_log=True,
+    auto_backup=True,
+    crypted=True,
+    encryption_method="fernet",
+    encryption_key="ma-clé-sécurisée"
+)
+```
+
+---
+
+# Opérations de base
+
+LiteJsonDb fournit quatre opérations principales pour manipuler les données :
+
+* `set_data` : créer des données ;
+* `edit_data` : modifier des données existantes ;
+* `get_data` : récupérer des données ;
+* `remove_data` : supprimer des données.
+
+Une cinquième méthode, `get_db`, permet de récupérer la base entière.
+
+---
+
+## `set_data`
+
+`set_data` permet de créer une entrée à un chemin donné.
+
+### Créer une collection vide
+
+```python
 db.set_data("posts")
+```
 
-# Définir les données avec des données supplémentaires
-db.set_data("users/1", {"name": "Aliou", "age": 20})
-db.set_data("users/2", {"name": "Coder", "age": 25})
-</pre>
+### Créer une entrée avec des données
 
-#### :writing_hand: Modification des données
+```python
+db.set_data(
+    "users/1",
+    {
+        "name": "Aliou",
+        "age": 20
+    }
+)
+```
 
-Besoin de mettre à jour des données ? Pas de problème. Utilisez la méthode `edit_data`. Elle fusionne les nouvelles données avec les données existantes, pour que rien ne soit perdu.
+Vous pouvez créer plusieurs entrées :
 
-<pre>
-# Modifier les données
-db.edit_data("users/1", {"name": "Alex"})
-</pre>
+```python
+db.set_data(
+    "users/1",
+    {
+        "name": "Aliou",
+        "age": 20
+    }
+)
 
-#### :ballot_box_with_check: Obtention des données
+db.set_data(
+    "users/2",
+    {
+        "name": "Coder",
+        "age": 25
+    }
+)
+```
 
-La récupération des données est on ne peut plus simple. Utilisez la méthode `get_data`.
+### Important
 
-<pre>
-# Obtenir les données
-print(db.get_data("users/1"))  # Sortie: {'name': 'Alex', 'age': 20}
-print(db.get_data("users/2"))  # Sortie: {'name': 'Coder', 'age': 25}
-</pre>
+`set_data` est destiné à la création de données.
 
-> [!TIP]
-> Vous pouvez accéder directement à des données spécifiques en utilisant des chemins dans la méthode `get_data`. Par exemple, pour obtenir uniquement le nom de l'utilisateur, vous pouvez faire :
-<pre>
+Si la clé existe déjà, LiteJsonDb vous indiquera d'utiliser `edit_data` pour effectuer une modification.
+
+---
+
+## `edit_data`
+
+`edit_data` permet de modifier une entrée existante.
+
+Les nouvelles valeurs sont fusionnées avec les données déjà présentes.
+
+```python
+db.edit_data(
+    "users/1",
+    {
+        "name": "Alex"
+    }
+)
+```
+
+Si la donnée initiale est :
+
+```python
+{
+    "name": "Aliou",
+    "age": 20
+}
+```
+
+Après la modification :
+
+```python
+{
+    "name": "Alex",
+    "age": 20
+}
+```
+
+La valeur `age` est conservée parce qu'elle n'a pas été remplacée.
+
+---
+
+## `get_data`
+
+`get_data` permet de récupérer les données associées à un chemin.
+
+```python
+print(db.get_data("users/1"))
+```
+
+Exemple de résultat :
+
+```python
+{
+    "name": "Alex",
+    "age": 20
+}
+```
+
+Pour récupérer une autre entrée :
+
+```python
+print(db.get_data("users/2"))
+```
+
+### Accéder directement à une valeur
+
+Les chemins peuvent être utilisés pour cibler une valeur précise.
+
+```python
 print(db.get_data("users/1/name"))
-</pre>
+```
 
-Ici, vous obtenez le nom de l'utilisateur sans récupérer les autres parties des données.
+Au lieu de récupérer :
 
-#### :wastebasket: Suppression des données
+```python
+{
+    "name": "Alex",
+    "age": 20
+}
+```
 
-Besoin de supprimer quelque chose ? La méthode `remove_data` est là pour vous.
+la méthode cible directement :
 
-<pre>
-# Supprimer les données
+```text
+Alex
+```
+
+Cette notation est utile lorsque vous n'avez pas besoin de charger l'ensemble de l'objet.
+
+---
+
+## `remove_data`
+
+`remove_data` permet de supprimer une entrée.
+
+```python
 db.remove_data("users/2")
-</pre>
+```
 
-#### :package: Récupération complète de la base de données
+La donnée située à `users/2` est alors supprimée.
 
-Vous voulez tout voir ? Utilisez la méthode `get_db`. Définissez `raw=True` si vous voulez les données dans un format lisible.
+---
 
-<pre>
-# Obtenir la base de données complète
-print(db.get_db(raw=True))
-</pre>
+## `get_db`
 
-## 🔍 Recherche de données (nouveau)
+`get_db` permet de récupérer l'ensemble de la base de données.
 
-Cette nouvelle fonctionnalité a été intégrée en réponse à la [question](https://github.com/codingtuto/LiteJsonDb/issues/2) soulevée concernant l'amélioration des capacités de recherche de données. Cette fonction vous permet de rechercher des valeurs dans votre base de données, soit dans l'ensemble de la base de données, soit dans une clé spécifique. Cette amélioration rend la recherche de vos données beaucoup plus facile et efficace.
+```python
+db.get_db()
+```
 
-### Comment utiliser
+Pour demander les données dans un format brut et lisible :
 
-La fonction `search_data` offre deux modes de recherche principaux :
+```python
+print(
+    db.get_db(raw=True)
+)
+```
 
-1.  **Recherche de base** : Recherche une valeur n'importe où dans la base de données.
-2.  **Recherche spécifique à une clé** : Recherche une valeur dans une clé spécifique.
+L'option `raw=True` est particulièrement utile pour inspecter le contenu de la base pendant le développement.
 
-### Intégration
+---
 
-1.  **Utiliser la fonction `search_data`**
+# Recherche
 
-    Voici comment vous pouvez utiliser la fonction `search_data` :
+LiteJsonDb fournit `search_data` pour rechercher une valeur dans les données existantes.
 
-    -   **Recherche de base** : Pour rechercher une valeur dans l'ensemble de la base de données, utilisez le code suivant :
+La méthode peut être utilisée de deux façons :
 
-        ```python
-        results = db.search_data("Aliou")
-        print(results)
-        ```
+1. rechercher dans l'ensemble de la base ;
+2. limiter la recherche à une clé spécifique.
 
-        Ceci recherchera la valeur `"Aliou"` dans toutes les clés de votre base de données.
+---
 
-    -   **Recherche spécifique à une clé** : Pour rechercher une valeur dans une clé spécifique, utilisez le code suivant :
+## Recherche globale
 
-        ```python
-        results = db.search_data("Aliou", key="users")
-        print(results)
-        ```
+Pour rechercher une valeur dans toute la base :
 
-        Ceci recherchera la valeur `"Aliou"` spécifiquement dans la clé `"users"`.
+```python
+results = db.search_data("Aliou")
 
-## 📦 Sauvegarde vers Telegram (nouveau)
+print(results)
+```
 
-Cette fonctionnalité a été intégrée pour vous aider à sauvegarder facilement vos fichiers, tels que votre base de données, directement dans une conversation Telegram. En utilisant cette méthode, vous pouvez sauvegarder en toute sécurité les fichiers importants automatiquement dans une conversation Telegram.
+Cette recherche parcourt les données disponibles afin de trouver la valeur recherchée.
 
-### Comment utiliser
+---
 
-La fonction `backup_to_telegram` vous permet de sauvegarder n'importe quel fichier sur Telegram via un bot. Vous aurez besoin de deux informations essentielles : le **token du bot** et l'**identifiant de la conversation** où le fichier sera envoyé.
+## Recherche dans une clé spécifique
 
-### Intégration
+Vous pouvez limiter la recherche à une clé avec le paramètre `key`.
 
-1.  **Obtenir votre token de bot Telegram**
-    Pour utiliser cette fonctionnalité, vous devez d'abord créer un bot sur Telegram en utilisant [@BotFather](https://t.me/BotFather). Une fois que votre bot est créé, BotFather vous fournira un token que vous utiliserez pour l'authentification.
+```python
+results = db.search_data(
+    "Aliou",
+    key="users"
+)
 
-2.  **Trouver votre identifiant de conversation**
-    Vous pouvez obtenir votre identifiant de conversation en utilisant [@MissRose_bot](https://t.me/MissRose_bot) et en tapant `/id`. Il vous donnera votre identifiant de conversation unique.
+print(results)
+```
 
-3.  **Utiliser la fonction `backup_to_telegram`**
-    Voici comment utiliser la fonction `backup_to_telegram` :
+Dans cet exemple, la recherche est limitée à `users`.
 
-    <pre><code>python
-    db.backup_to_telegram("votre_token", "votre_identifiant_de_conversation")
-    </code></pre>
+Cette approche est préférable lorsque votre base contient plusieurs collections et que vous connaissez déjà la zone dans laquelle rechercher.
 
-    Ceci enverra le fichier de sauvegarde à l'identifiant de conversation spécifié en utilisant votre bot Telegram.
+---
 
-## 📦 Exportation vers CSV (nouveau)
+# Sauvegarde Telegram
 
-Cette fonctionnalité a été intégrée pour vous permettre d'exporter facilement vos données au format CSV. Cela facilite le partage et l'analyse de vos données en dehors de l'application en créant des fichiers CSV qui peuvent être ouverts avec des tableurs comme Excel ou Google Sheets.
+LiteJsonDb permet d'envoyer un fichier de sauvegarde vers une conversation Telegram à l'aide d'un bot.
 
-### Comment utiliser
+La méthode concernée est :
 
-La méthode `export_to_csv` vous permet d'exporter soit une collection spécifique, soit l'ensemble de la base de données. Voici comment l'utiliser :
+```python
+backup_to_telegram()
+```
 
-### Intégration
+Elle nécessite deux informations :
 
-1.  **Préparer vos données**
-    Assurez-vous que les données que vous souhaitez exporter sont bien structurées. Vous pouvez avoir vos données sous forme de dictionnaires ou de listes de dictionnaires. Par exemple :
+* le token du bot Telegram ;
+* l'identifiant de la conversation destinataire.
 
-    <pre><code>
-    # Ajouter des données d'exemple
-    db.set_data("users", {
-        "1": {"name": "Aliou", "age": 20},
-        "2": {"name": "Coder", "age": 25}
-    })
-    </code></pre>
+---
 
-2.  **Utiliser la méthode `export_to_csv`**
-    Voici comment appeler la méthode pour exporter les données :
+## 1. Créer le bot Telegram
 
-    #### Exporter une collection spécifique
+Créez votre bot avec [@BotFather](https://t.me/BotFather).
 
-    Pour exporter une collection spécifique, vous devez fournir la clé correspondante :
+Après la création du bot, Telegram fournit un token.
 
-    <pre><code>
-    # Exporter une collection spécifique
-    db.export_to_csv("users")
-    </code></pre>
+Le token doit être conservé de manière sécurisée et ne doit pas être publié dans un dépôt Git public.
 
-    #### Exporter l'ensemble de la base de données
+---
 
-    Si vous souhaitez exporter toutes les données de la base de données, vous pouvez appeler la méthode sans paramètres :
+## 2. Récupérer l'identifiant de conversation
 
-    <pre><code>
-    # Exporter l'ensemble de la base de données
-    db.export_to_csv()
-    </code></pre>
+L'identifiant de conversation peut être obtenu avec [@MissRose_bot](https://t.me/MissRose_bot).
 
-## 🐛 Gestion des erreurs
+Utilisez :
 
-Cette fonctionnalité est expérimentale et peut ne pas prendre en charge tous les formats de données. Si vous essayez d'exporter une collection qui n'existe pas, un message d'erreur s'affichera :
+```text
+/id
+```
 
-Si vous recevez des erreurs comme celle-ci : `Oups ! Une erreur s'est produite lors de l'exportation CSV : ...`, nous vous recommandons d'ouvrir une issue dans notre dépôt afin que nous puissions y remédier. Vos commentaires sont précieux, et nous apprécions votre patience alors que nous continuons à améliorer cette fonctionnalité !
+Le bot vous retournera l'identifiant de la conversation.
 
-### :file_folder: Travailler avec les sous-collections
+---
 
-## :file_folder: Sous-collections
+## 3. Envoyer la sauvegarde
 
-Dans LiteJsonDb, les sous-collections sont un moyen d'organiser vos données de manière hiérarchique. Considérez-les comme des structures imbriquées qui vous permettent de regrouper les données associées sous une clé parent. Cette fonctionnalité est particulièrement utile lorsque vous souhaitez gérer des relations de données complexes sans perdre la simplicité du JSON.
+Utilisez ensuite :
 
-### :thinking: Que sont les sous-collections ?
+```python
+db.backup_to_telegram(
+    "votre_token",
+    "votre_identifiant_de_conversation"
+)
+```
 
-Les sous-collections sont essentiellement des collections au sein de collections. Par exemple, si vous avez une collection principale d'utilisateurs, vous pouvez organiser leurs publications dans des sous-collections distinctes. Voici comment vous pouvez travailler avec elles :
+Le fichier de sauvegarde est envoyé à la conversation correspondant à l'identifiant fourni.
 
--   **Définition des données de sous-collection** : Créez et remplissez une sous-collection sous une clé parent spécifiée.
--   **Modification des données de sous-collection** : Mettez à jour les éléments existants dans une sous-collection.
--   **Obtention des données de sous-collection** : Récupérez les données stockées dans une sous-collection.
--   **Suppression des données de sous-collection** : Supprimez les éléments ou des sous-collections entières.
+### Exemple
 
-L'utilisation de sous-collections vous aide à maintenir une structure claire dans vos données, ce qui facilite leur gestion et leur interrogation.
+```python
+import LiteJsonDb
 
-#### :heavy_plus_sign: Définition des données de sous-collection
+db = LiteJsonDb.JsonDB(
+    auto_backup=True
+)
 
-Organisez vos données avec des sous-collections. Facile comme bonjour.
+db.backup_to_telegram(
+    "123456:ABCDEF...",
+    "-100123456789"
+)
+```
 
-<pre>
-# Définir les données de sous-collection
-db.set_subcollection("groups", "1", {"name": "Admins"})
-</pre>
+### Sécurité
 
-#### :writing_hand: Modification des données de sous-collection
+Ne stockez pas le token directement dans votre code si le projet est versionné.
 
-Modifier des éléments dans une sous-collection ? Pas de problème.
+Évitez notamment :
 
-<pre>
-# Modifier les données de sous-collection
-db.edit_subcollection("groups", "1", {"description": "Groupe d'administrateurs"})
-</pre>
+```python
+db.backup_to_telegram(
+    "TOKEN_REEL",
+    "CHAT_ID"
+)
+```
 
-#### :ballot_box_with_check: Obtention des données de sous-collection
+dans un dépôt public.
 
-Besoin de récupérer des sous-collections ou des éléments spécifiques ? On s'en occupe.
+Préférez des variables d'environnement ou un système de configuration adapté à votre environnement d'exécution.
 
-<pre>
-# Obtenir les données de sous-collection
-print(db.get_subcollection("groups"))
+---
 
-# Obtenir un élément personnalisé des données de sous-collection
-print(db.get_subcollection("groups", "1"))
-</pre>
+# Export CSV
 
-#### :wastebasket: Suppression des données de sous-collection
+LiteJsonDb permet d'exporter les données au format CSV avec :
 
-La suppression d'éléments de sous-collections est tout aussi simple.
+```python
+export_to_csv()
+```
 
-<pre>
-# Supprimer les données de sous-collection
-db.remove_subcollection("groups", "1")
-</pre>
+L'export peut être effectué sur une collection spécifique ou sur l'ensemble de la base.
 
-## :bug: Gestion des erreurs
+---
 
-LiteJsonDb est là pour vous aider. Voici quelques messages d'erreur colorés et conviviaux pour vous guider :
+## Préparer les données
 
--   **La clé existe** : Si vous essayez de définir des données avec une clé existante, il vous suggérera d'utiliser `edit_data`.
--   **La clé n'a pas été trouvée** : Si une clé n'existe pas lorsque vous essayez d'obtenir ou de supprimer des données, il vous avertira avec un conseil sur la façon de procéder.
--   **Problèmes de fichiers** : S'il y a des problèmes de permissions de fichiers, il vous guidera sur la façon de les résoudre.
+Exemple de structure :
 
-## :open_file_folder: Exemple de structure de projet
+```python
+db.set_data(
+    "users",
+    {
+        "1": {
+            "name": "Aliou",
+            "age": 20
+        },
+        "2": {
+            "name": "Coder",
+            "age": 25
+        }
+    }
+)
+```
 
-Voici à quoi pourrait ressembler votre projet si vous initialisez `LiteJssonDb` :
+---
 
-<pre>
+## Exporter une collection
+
+Pour exporter uniquement `users` :
+
+```python
+db.export_to_csv("users")
+```
+
+Le paramètre correspond au nom de la collection à exporter.
+
+---
+
+## Exporter toute la base
+
+Pour exporter l'ensemble de la base :
+
+```python
+db.export_to_csv()
+```
+
+Aucun nom de collection n'est nécessaire.
+
+---
+
+## Limites actuelles
+
+La fonctionnalité d'export CSV est expérimentale et peut ne pas prendre en charge tous les formats de données.
+
+Si vous essayez d'exporter une collection inexistante ou une structure non prise en charge, une erreur peut être retournée.
+
+Exemple :
+
+```text
+Oups ! Une erreur s'est produite lors de l'exportation CSV : ...
+```
+
+En cas de problème reproductible, ouvrez une issue dans le dépôt avec :
+
+* la version de LiteJsonDb ;
+* votre version de Python ;
+* la structure des données concernées ;
+* le code permettant de reproduire le problème ;
+* le message d'erreur complet.
+
+---
+
+# Sous-collections
+
+Les sous-collections permettent de représenter des données hiérarchiques.
+
+Elles sont utiles lorsque plusieurs données appartiennent à une même collection parent.
+
+Par exemple :
+
+```text
+groups
+├── 1
+│   ├── name
+│   └── description
+└── 2
+    ├── name
+    └── description
+```
+
+Les principales opérations disponibles sont :
+
+* `set_subcollection` ;
+* `edit_subcollection` ;
+* `get_subcollection` ;
+* `remove_subcollection`.
+
+---
+
+## `set_subcollection`
+
+Crée une entrée dans une sous-collection.
+
+```python
+db.set_subcollection(
+    "groups",
+    "1",
+    {
+        "name": "Admins"
+    }
+)
+```
+
+Les paramètres correspondent à :
+
+| Paramètre            | Description             |
+| -------------------- | ----------------------- |
+| `"groups"`           | collection parent       |
+| `"1"`                | identifiant de l'entrée |
+| `{"name": "Admins"}` | données à enregistrer   |
+
+---
+
+## `edit_subcollection`
+
+Modifie une entrée existante dans une sous-collection.
+
+```python
+db.edit_subcollection(
+    "groups",
+    "1",
+    {
+        "description": "Groupe d'administrateurs"
+    }
+)
+```
+
+Cette opération permet d'ajouter ou de modifier des champs dans l'entrée ciblée.
+
+---
+
+## `get_subcollection`
+
+Pour récupérer une sous-collection complète :
+
+```python
+print(
+    db.get_subcollection("groups")
+)
+```
+
+Pour récupérer une entrée spécifique :
+
+```python
+print(
+    db.get_subcollection(
+        "groups",
+        "1"
+    )
+)
+```
+
+La première forme récupère la collection.
+
+La seconde cible une entrée précise.
+
+---
+
+## `remove_subcollection`
+
+Pour supprimer une entrée d'une sous-collection :
+
+```python
+db.remove_subcollection(
+    "groups",
+    "1"
+)
+```
+
+---
+
+# Gestion des erreurs
+
+LiteJsonDb fournit des messages permettant d'identifier plusieurs erreurs courantes.
+
+## Clé déjà existante
+
+Si vous utilisez `set_data` sur une clé qui existe déjà, LiteJsonDb vous indique d'utiliser `edit_data`.
+
+Exemple :
+
+```python
+db.set_data(
+    "users/1",
+    {
+        "name": "Alex"
+    }
+)
+```
+
+Si `users/1` existe déjà, utilisez :
+
+```python
+db.edit_data(
+    "users/1",
+    {
+        "name": "Alex"
+    }
+)
+```
+
+---
+
+## Clé inexistante
+
+Si vous essayez de récupérer ou de supprimer une clé qui n'existe pas, LiteJsonDb signale que la clé n'a pas été trouvée.
+
+Exemple :
+
+```python
+db.get_data("users/999")
+```
+
+ou :
+
+```python
+db.remove_data("users/999")
+```
+
+Vérifiez le chemin utilisé avant d'effectuer l'opération.
+
+---
+
+## Problèmes de fichiers
+
+LiteJsonDb dépend du système de fichiers local pour stocker ses données.
+
+Des problèmes de permissions peuvent donc empêcher :
+
+* la création de fichiers ;
+* la modification de fichiers ;
+* la création de sauvegardes ;
+* l'écriture des journaux.
+
+Dans ce cas, vérifiez les permissions du répertoire utilisé par votre application.
+
+---
+
+# Structure de projet
+
+Une structure possible pour une application utilisant LiteJsonDb :
+
+```text
 projet/
-│
 ├── base_de_données/
 │   ├── db.json
 │   ├── db_backup.json
 │   └── LiteJsonDb.log
 └── votre_code.py
-</pre>
+```
 
-## :shipit: Exemple `main.py`
+Les noms et emplacements exacts peuvent dépendre de la configuration et de la manière dont LiteJsonDb est initialisé.
 
-Mettons tout cela ensemble avec un exemple de fichier `main.py` :
+---
 
-<pre>
+# Exemple complet
+
+Voici un exemple regroupant les principales fonctionnalités de LiteJsonDb dans un même fichier.
+
+```python
 import LiteJsonDb
-  
-# Initialiser la base de données avec le chiffrement activé
-db =  LiteJsonDb.JsonDB()
 
-# Ajouter des données initiales
-# Définir les données sans données supplémentaires
+
+# Initialisation de la base de données
+db = LiteJsonDb.JsonDB()
+
+
+# Création d'une collection
 db.set_data("posts")
 
-# Définir les données avec des données supplémentaires
-db.set_data("users/1", {"name": "Aliou", "age": 20})
-db.set_data("users/2", {"name": "Coder", "age": 25})
 
-# Modifier les données existantes
-db.edit_data("users/1", {"name": "Alex"})
+# Création d'utilisateurs
+db.set_data(
+    "users/1",
+    {
+        "name": "Aliou",
+        "age": 20
+    }
+)
 
-# Récupérer et afficher les données
-print(db.get_data("users/1"))
-print(db.get_data("users/2"))
+db.set_data(
+    "users/2",
+    {
+        "name": "Coder",
+        "age": 25
+    }
+)
 
-# Supprimer les données
+
+# Modification d'un utilisateur
+db.edit_data(
+    "users/1",
+    {
+        "name": "Alex"
+    }
+)
+
+
+# Récupération des utilisateurs
+print(
+    db.get_data("users/1")
+)
+
+print(
+    db.get_data("users/2")
+)
+
+
+# Suppression d'un utilisateur
 db.remove_data("users/2")
 
-# Effectuer une recherche de base
+
+# Recherche globale
 results = db.search_data("Aliou")
-print("Résultats de la recherche de base:", results)
 
-# Effectuer une recherche spécifique à une clé
-results = db.search_data("Aliou", key="users")
-print("Résultats de la recherche spécifique à une clé:", results)
+print(
+    "Résultats de la recherche globale:",
+    results
+)
 
-# Récupérer la base de données complète
-print(db.get_db(raw=True))
 
-# Travailler avec des sous-collections
-db.set_subcollection("groups", "1", {"name": "Admins"})
-db.edit_subcollection("groups", "1", {"description": "Groupe d'administrateurs"})
-print(db.get_subcollection("groups"))
-db.remove_subcollection("groups", "1")
+# Recherche limitée à une collection
+results = db.search_data(
+    "Aliou",
+    key="users"
+)
 
-# SI VOUS VOULEZ SAUVEGARDER LA BASE DE DONNÉES SUR TELEGRAM
-# db.backup_to_telegram("votre_token", "votre_identifiant_de_conversation")
+print(
+    "Résultats de la recherche dans users:",
+    results
+)
 
-""" SI VOUS VOULEZ EXPORTER VOS DONNÉES AU FORMAT CSV
-# Exporter une collection spécifique
+
+# Récupération de la base complète
+print(
+    db.get_db(raw=True)
+)
+
+
+# Création d'une sous-collection
+db.set_subcollection(
+    "groups",
+    "1",
+    {
+        "name": "Admins"
+    }
+)
+
+
+# Modification de la sous-collection
+db.edit_subcollection(
+    "groups",
+    "1",
+    {
+        "description": "Groupe d'administrateurs"
+    }
+)
+
+
+# Récupération de la sous-collection
+print(
+    db.get_subcollection("groups")
+)
+
+
+# Suppression d'une entrée de sous-collection
+db.remove_subcollection(
+    "groups",
+    "1"
+)
+```
+
+---
+
+# Sauvegarde Telegram dans l'exemple
+
+Si vous souhaitez envoyer une sauvegarde vers Telegram :
+
+```python
+db.backup_to_telegram(
+    "votre_token",
+    "votre_identifiant_de_conversation"
+)
+```
+
+Cette opération peut être appelée après les modifications importantes de la base.
+
+---
+
+# Export CSV dans l'exemple
+
+Pour exporter une collection :
+
+```python
 db.export_to_csv("users")
+```
 
-# Exporter l'ensemble de la base de données
+Pour exporter l'ensemble de la base :
+
+```python
 db.export_to_csv()
-"""
-</pre>
+```
 
-## :memo: Comprendre `set_data` vs. Sous-collections
+---
 
-<details>
-<summary>Cliquez pour développer</summary>
+# `set_data` vs sous-collections
 
-### `set_data`
+Les deux systèmes permettent de structurer des données, mais ils répondent à des besoins différents.
 
-La méthode `set_data` est utilisée pour ajouter ou mettre à jour des données à un chemin spécifique. Si la clé existe déjà, vous devrez utiliser `edit_data` pour la modifier. Cette méthode est idéale pour les paires clé-valeur simples ou les structures de données directes.
+## `set_data`
 
-<pre>
-# Définir les données
-db.set_data("users/1", {"name": "Aliou", "age": 20})
-</pre>
+`set_data` convient aux données directement accessibles via un chemin.
 
-### Sous-collections
+Exemple :
 
-Les sous-collections, d'autre part, sont utilisées pour créer et gérer des structures imbriquées dans votre base de données. Elles vous permettent de regrouper les données associées sous une clé parent, offrant ainsi une manière plus organisée de gérer les relations complexes. Les sous-collections sont essentiellement des collections au sein de collections.
+```python
+db.set_data(
+    "users/1",
+    {
+        "name": "Aliou",
+        "age": 20
+    }
+)
+```
 
-<pre>
-# Définir les données de sous-collection
-db.set_subcollection("groups", "1", {"name": "Admins"})
-</pre>
+Le chemin :
 
-### Principales différences
+```text
+users/1
+```
 
--   **Structure** : `set_data` est utilisé pour les structures de données plates, tandis que les sous-collections permettent une organisation hiérarchique.
--   **Utilisation** : Utilisez `set_data` pour les paires clé-valeur simples et `set_subcollection` lorsque vous avez besoin de collections imbriquées.
--   **Organisation** : Les sous-collections aident à maintenir une structure claire et à regrouper les données associées, ce qui facilite la gestion et l'interrogation des relations complexes.
+permet d'identifier directement l'entrée.
 
-En comprenant ces différences, vous pouvez choisir la méthode appropriée pour vos besoins de gestion de données, en assurant une base de données bien organisée et efficace.
+Utilisez cette approche lorsque votre structure de données reste relativement simple.
 
-</details>
+---
 
-## 🧾 TODO : Prochaines étapes pour LiteJsonDb
+## Sous-collections
 
-Nous nous efforçons toujours d'améliorer LiteJsonDb. Voici ce que nous avons en vue :
+Les sous-collections permettent de représenter une relation hiérarchique.
 
--   [x] Ajouter la prise en charge du chiffrement des données pour sécuriser le contenu JSON.
--   [x] Mettre en œuvre des sauvegardes automatiques pour assurer la sécurité des données.
--   [x] Améliorer la gestion des erreurs avec des messages conviviaux et colorés.
--   [x] Ajout de la documentation en français
--   [x] Mettre en œuvre des sauvegardes automatisées pour envoyer les données à un bot Telegram.
--   [ ] Corriger tous les bugs découverts pour assurer un fonctionnement sans heurts.
--   [ ] Atteindre 100 étoiles sur GitHub et célébrer cela en ajoutant d'autres fonctionnalités impressionnantes !
+Exemple :
 
-## :hugs: Contributions et communauté
+```python
+db.set_subcollection(
+    "groups",
+    "1",
+    {
+        "name": "Admins"
+    }
+)
+```
 
-Nous accueillons les contributions, les suggestions et les commentaires pour rendre LiteJsonDb encore meilleur ! Si vous avez des idées d'améliorations ou si vous voulez corriger un bug, n'hésitez pas à :
+Ici :
 
--   **Soumettre une demande d'extraction (PR)** : Contribuez de nouvelles fonctionnalités ou des corrections de bugs en créant une demande d'extraction. Vos modifications aideront à améliorer LiteJsonDb pour tout le monde !
--   **Signaler les problèmes** : Si vous rencontrez des bugs ou des problèmes, veuillez ouvrir un problème dans le dépôt. Fournissez autant de détails que possible afin que nous puissions y remédier rapidement.
--   **Suggérer des fonctionnalités** : Vous avez une idée pour une nouvelle fonctionnalité ? Faites-le nous savoir ! Nous sommes toujours ouverts aux suggestions sur la façon d'améliorer LiteJsonDb.
+```text
+groups
+└── 1
+    └── name
+```
 
-> Vos commentaires et contributions sont grandement appréciés et nous aident à maintenir la croissance et l'amélioration de LiteJsonDb.
+La sous-collection permet donc de regrouper plusieurs entrées sous une même collection parent.
 
-## :heart: Dons et soutien : Comment vous pouvez aider
+---
 
-LiteJsonDb est une œuvre d'amour, et votre soutien peut faire une grande différence ! Si vous appréciez le projet et que vous voulez montrer votre gratitude, voici quelques façons dont vous pouvez aider :
+## Différences principales
 
-### Forkez et mettez une étoile au dépôt
+| Critère                 | `set_data`      | Sous-collections                    |
+| ----------------------- | --------------- | ----------------------------------- |
+| Structure               | Directe         | Hiérarchique                        |
+| Méthode de création     | `set_data()`    | `set_subcollection()`               |
+| Méthode de modification | `edit_data()`   | `edit_subcollection()`              |
+| Méthode de lecture      | `get_data()`    | `get_subcollection()`               |
+| Méthode de suppression  | `remove_data()` | `remove_subcollection()`            |
+| Cas d'utilisation       | Données simples | Données regroupées et hiérarchiques |
 
-L'une des meilleures façons de soutenir LiteJsonDb est de forker le dépôt et de lui donner une étoile sur GitHub. C'est comme un high-five virtuel et cela nous aide à faire connaître le projet. De plus, cela nous montre que vous appréciez le travail que nous faisons !
+### Utiliser `set_data`
 
-### Envisagez un don
+```python
+db.set_data(
+    "users/1",
+    {
+        "name": "Aliou"
+    }
+)
+```
 
-Si vous vous sentez particulièrement généreux et que vous souhaitez contribuer financièrement, nous vous en serions incroyablement reconnaissants. Les dons nous aident à couvrir les coûts et à assurer le bon fonctionnement du projet. Vous pouvez nous soutenir des manières suivantes :
+### Utiliser une sous-collection
 
--   **PayPal** : Envoyez un don directement à [mon compte PayPal](https://paypal.me/djibson35). Chaque petite contribution aide et est grandement appréciée !
--   **Bitcoin** : Vous préférez les cryptomonnaies ? Vous pouvez également faire un don en utilisant Bitcoin à l'adresse suivante : `1Nn15EttfT2dVBisj8bXCnBiXjcqk1ehWR`.
+```python
+db.set_subcollection(
+    "groups",
+    "1",
+    {
+        "name": "Admins"
+    }
+)
+```
 
-> Votre soutien, que ce soit par une étoile, un fork ou un don, contribue à maintenir LiteJsonDb vivant et florissant. Merci d'être génial !
+En pratique, choisissez `set_data` lorsque vos données peuvent être organisées simplement par chemin et utilisez les sous-collections lorsque la relation entre les données nécessite une structure hiérarchique.
 
-Bon code et bonne continuation ! :rocket:
+---
+
+# API rapide
+
+## Initialisation
+
+```python
+LiteJsonDb.JsonDB(
+    enable_log=False,
+    auto_backup=False,
+    crypted=False,
+    encryption_method=None,
+    encryption_key=None
+)
+```
+
+Les paramètres permettent de configurer le comportement général de la base.
+
+---
+
+## Données principales
+
+### Créer
+
+```python
+db.set_data(path, data)
+```
+
+### Modifier
+
+```python
+db.edit_data(path, data)
+```
+
+### Lire
+
+```python
+db.get_data(path)
+```
+
+### Supprimer
+
+```python
+db.remove_data(path)
+```
+
+### Lire toute la base
+
+```python
+db.get_db(raw=True)
+```
+
+---
+
+## Recherche
+
+### Recherche globale
+
+```python
+db.search_data(value)
+```
+
+### Recherche dans une clé
+
+```python
+db.search_data(
+    value,
+    key="users"
+)
+```
+
+---
+
+## Sous-collections
+
+### Créer
+
+```python
+db.set_subcollection(
+    parent,
+    key,
+    data
+)
+```
+
+### Modifier
+
+```python
+db.edit_subcollection(
+    parent,
+    key,
+    data
+)
+```
+
+### Lire
+
+```python
+db.get_subcollection(
+    parent
+)
+```
+
+ou :
+
+```python
+db.get_subcollection(
+    parent,
+    key
+)
+```
+
+### Supprimer
+
+```python
+db.remove_subcollection(
+    parent,
+    key
+)
+```
+
+---
+
+## Sauvegarde Telegram
+
+```python
+db.backup_to_telegram(
+    bot_token,
+    chat_id
+)
+```
+
+---
+
+## Export CSV
+
+Exporter une collection :
+
+```python
+db.export_to_csv(
+    "users"
+)
+```
+
+Exporter toute la base :
+
+```python
+db.export_to_csv()
+```
+
+---
+
+# Roadmap
+
+Les fonctionnalités suivantes sont actuellement présentes ou prévues.
+
+* [x] Chiffrement des données JSON
+* [x] Sauvegardes automatiques
+* [x] Gestion des erreurs
+* [x] Documentation française
+* [x] Sauvegarde vers Telegram
+* [x] Recherche de données
+* [x] Export CSV
+* [x] Sous-collections
+* [ ] Corriger les bugs actuellement connus
+* [ ] Continuer à améliorer la stabilité du package
+* [ ] Atteindre 100 étoiles sur GitHub
+* [ ] Ajouter de nouvelles fonctionnalités
+
+La roadmap peut évoluer en fonction des besoins du projet et des contributions de la communauté.
+
+---
+
+# Contribuer
+
+Les contributions sont ouvertes.
+
+Vous pouvez contribuer de plusieurs manières :
+
+## Corriger un bug
+
+Si vous trouvez un problème, ouvrez une issue dans le dépôt.
+
+Incluez autant d'informations que possible :
+
+* version de LiteJsonDb ;
+* version de Python ;
+* système d'exploitation ;
+* code permettant de reproduire le problème ;
+* erreur complète ;
+* comportement attendu ;
+* comportement observé.
+
+---
+
+## Ajouter une fonctionnalité
+
+Pour proposer une nouvelle fonctionnalité :
+
+1. créez une branche dédiée ;
+2. implémentez la modification ;
+3. testez le comportement ;
+4. documentez l'API ajoutée ;
+5. ouvrez une Pull Request.
+
+Exemple :
+
+```bash
+git checkout -b feature/nouvelle-fonctionnalite
+```
+
+Après vos modifications :
+
+```bash
+git add .
+git commit -m "feat: ajouter une nouvelle fonctionnalité"
+git push origin feature/nouvelle-fonctionnalite
+```
+
+Puis ouvrez une Pull Request sur GitHub.
+
+---
+
+## Améliorer la documentation
+
+Les corrections de documentation sont également les bienvenues.
+
+Vous pouvez notamment améliorer :
+
+* les exemples ;
+* les explications de l'API ;
+* les cas d'utilisation ;
+* les messages d'erreur ;
+* la documentation française ;
+* les exemples de configuration.
+
+---
+
+# Soutenir le projet
+
+Si LiteJsonDb vous est utile, plusieurs formes de contribution sont possibles.
+
+## GitHub
+
+Vous pouvez :
+
+* utiliser le projet ;
+* signaler des bugs ;
+* proposer des fonctionnalités ;
+* contribuer au code ;
+* forker le dépôt ;
+* donner une étoile au projet.
+
+Une étoile GitHub permet également de rendre le projet plus visible auprès d'autres développeurs.
+
+---
+
+## Don
+
+Vous pouvez également soutenir financièrement le projet.
+
+### PayPal
+
+[Effectuer un don via PayPal](https://paypal.me/djibson35)
+
+### Bitcoin
+
+Adresse Bitcoin :
+
+```text
+1Nn15EttfT2dVBisj8bXCnBiXjcqk1ehWR
+```
+
+---
+
+# Documentation
+
+Pour les fonctionnalités complémentaires et les exemples détaillés, consultez le wiki :
+
+https://github.com/codingtuto/LiteJsonDb/wiki
+
+Documentation française :
+
+```text
+./README.fr.md
+```
+
+---
+
+# Licence et utilisation
+
+Reportez-vous aux fichiers du dépôt pour connaître les conditions de licence applicables au projet.
+
+---
+
+# Auteur et projet
+
+LiteJsonDb est développé et maintenu autour d'une idée simple : fournir une interface JSON locale suffisamment légère pour les projets Python qui n'ont pas besoin d'une infrastructure de base de données complète.
+
+Le projet reste volontairement simple dans son utilisation :
+
+```python
+import LiteJsonDb
+
+db = LiteJsonDb.JsonDB()
+
+db.set_data(
+    "users/1",
+    {
+        "name": "Aliou"
+    }
+)
+
+print(
+    db.get_data("users/1")
+)
+```
+
+Pour des besoins plus avancés, les fonctionnalités de chiffrement, sauvegarde, recherche, sous-collections et export permettent d'étendre cette base sans changer complètement l'API.
+
+---
+
+## Liens
+
+* [PyPI](https://pypi.org/project/LiteJsonDb/)
+* [GitHub](https://github.com/codingtuto/LiteJsonDb)
+* [Wiki](https://github.com/codingtuto/LiteJsonDb/wiki)
+* [Documentation française](./README.fr.md)
+
+---
+
+Bon code.
